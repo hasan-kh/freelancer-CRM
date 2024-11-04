@@ -1,0 +1,41 @@
+name: Lint, test  # and deploy to VPS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  lint_test_artifact_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3.3.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Build docker images
+        run: docker compose -f docker-compose-deploy.yml build
+
+      - name: Lint
+        run: docker compose run --rm app ./lint.sh
+
+      - name: Test
+        run: docker compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
+
+#      - name: Deploy to VPS using SSH
+#        uses: appleboy/ssh-action@v1.1.0
+#        with:
+#          host: ${{ secrets.VPS_HOST }}
+#          username: ${{ secrets.VPS_USERNAME }}
+#          password: ${{ secrets.VPS_PASSWORD }}
+#          port: ${{ secrets.VPS_PORT }}
+#          script: |
+#            mkdir -p projects/crm && cd projects/crm
+#            git pull
+#            make run
+
+

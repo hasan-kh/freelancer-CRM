@@ -1,0 +1,56 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.docker
+
+# Ignore Python bytecode
+*.pyc
+*.pyo
+__pycache__
+
+# Ignore virtual environments
+venv/
+.venv/
+
+# Ignore Django migration files
+#*/migrations/*
+
+# Ignore local environment files
+.env
+.env.*
+!.env.tpl
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.swp
+
+# Ignore OS generated files
+.DS_Store
+*.AppleDouble
+*.LSOverride
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.bak
+*.orig
+*.pid
+*.seed
+*.cover
+*.coverage
+coverage.xml
+*.cache
+*.egg
+*.egg-info
+
+# Ignore database files
+*.db
+
+# Ignore static files (if you're building them inside Docker)
+staticfiles/
+
+# Ignore media files (if you're handling them outside Docker)
+media/

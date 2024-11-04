@@ -1,0 +1,9 @@
+DJANGO_DEBUG=0
+DJANGO_SECRET_KEY=changeme
+DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=dbname
+DB_USER=dbuser
+DB_PASSWORD=changeme
