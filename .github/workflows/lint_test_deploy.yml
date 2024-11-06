@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Build docker images
-        run: docker compose -f docker-compose-deploy.yml build
+        run: docker compose -f docker-compose.yml build
 
       - name: Lint
         run: docker compose run --rm app ./lint.sh
