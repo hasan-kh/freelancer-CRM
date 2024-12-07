@@ -17,6 +17,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Create env files from templates
+        run: |
+          cp ./envs/.env.tpl ./envs/.env 
+          cp ./envs/.env.db.tpl ./envs/.env.db 
+
       - name: Build docker images
         run: docker compose -f docker-compose.yml build
 

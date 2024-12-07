@@ -126,6 +126,7 @@ celerybeat.pid
 .env
 .env.*
 !.env.tpl
+!.env.db.tpl
 .venv
 env/
 venv/
@@ -159,3 +160,9 @@ cython_debug/
 
 # PyCharm
 .idea/
+
+# local requirements
+requirements.local.txt
+
+# local manage.py
+local_manage.py

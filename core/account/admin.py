@@ -12,9 +12,9 @@ class UserAdmin(Auth_UserAdmin):
     add_form = MyUserCreationForm
     form = MyUserChangeForm
     model = User
-    list_display = ('email', 'first_name', 'last_name', 'is_staff', 'is_active')
+    list_display = ('email', 'first_name', 'last_name', 'cellphone', 'is_staff', 'is_active')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
-    search_fields = ('first_name', 'last_name', 'email')
+    search_fields = ('first_name', 'last_name', 'email', 'cellphone')
     readonly_fields = ('last_login', 'date_joined')
     ordering = ('-id',)
     filter_horizontal = (
@@ -24,7 +24,7 @@ class UserAdmin(Auth_UserAdmin):
 
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'cellphone')}),
         (
             _('Permissions'),
             {

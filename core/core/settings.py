@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
     'drf_spectacular',
     'rest_framework_simplejwt',
@@ -72,7 +73,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -94,11 +95,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST', 'db'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+        'NAME': os.environ.get('DB_NAME', 'dbname'),
+        'USER': os.environ.get('DB_USER', 'dbuser'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'changeme'),
     }
 }
 
@@ -154,12 +155,34 @@ MEDIA_URL = 'static/media/'
 MEDIA_ROOT = '/vol/web/media'
 STATIC_ROOT = '/vol/web/static'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'core/staticfiles',
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SITE_ID = 1
+
 AUTH_USER_MODEL = 'account.User'
+
+PASSWORD_RESET_CODE_LENGTH = int(os.environ.get('PASSWORD_RESET_CODE_LENGTH', 6))
+PASSWORD_RESET_CODE_EXPIRE_MINUTES = int(os.environ.get(
+    'PASSWORD_RESET_CODE_EXPIRE_MINUTES',
+    10
+))
+
+ADMINS = [tuple(pair.split(':')) for pair in os.environ.get('ADMINS', '').split(',') if pair]
+
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -174,9 +197,14 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Small customer relationship management for freelancers.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SPLIT_REQUEST': True,  # if image upload failed, uncomment this
-}
 
+    'COMPONENT_SPLIT_REQUEST': True,  # if image upload failed, uncomment this
+
+    "SWAGGER_UI_SETTINGS": {
+        "persistAuthorization": True,
+    },
+    # "SWAGGER_UI_FAVICON_HREF": STATIC_URL + "logo.webp",  # default is swagger favicon
+}
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -185,7 +213,7 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": True,
 
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": os.getenv('JWT_SIGNING_KEY', SECRET_KEY),
+    "SIGNING_KEY": os.environ.get('JWT_SIGNING_KEY', SECRET_KEY),
     "VERIFYING_KEY": "",
     "AUDIENCE": None,
     "ISSUER": None,
@@ -219,31 +247,52 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
+LOG_COLORS = {
+    'DEBUG': 'cyan',
+    'INFO': 'green',
+    'WARNING': 'yellow',
+    'ERROR': 'red',
+    'CRITICAL': 'bold_red',
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'request_filter': {
+            '()': 'utils.custom_logging.RequestFilter',
+        },
+    },
     'formatters': {
         'detailed': {
-            'format': '{asctime} - {levelname} - {name} - {filename}:{lineno} - {message}\n',
+            'format': '{pathname}\n{asctime} - {levelname} - {name} - {filename}:{lineno} - {message}\n',
             'style': '{',
         },
         'colorized': {
             '()': 'colorlog.ColoredFormatter',
-            'format': '%(log_color)s%(asctime)s - %(levelname)s - %(name)s - '
+            'format': '%(log_color)s%(pathname)s\n%(asctime)s - %(levelname)s - %(name)s - '
                       '%(filename)s:%(lineno)s - %(message)s%(reset)s\n',
-            'log_colors': {
-                'DEBUG': 'cyan',
-                'INFO': 'green',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'bold_red',
-            },
+            'log_colors': LOG_COLORS,
+        },
+        'colorized_extra': {
+            '()': 'utils.custom_logging.IncludeClientColorFormatter',
+            'format': '%(log_color)s%(pathname)s\n'
+                      'IP:%(client_ip)-15s - user_id:%(user_id)s\n'
+                      '%(asctime)s - %(levelname)s - %(name)s - '
+                      '%(filename)s:%(lineno)s - %(message)s%(reset)s\n',
+
+            'log_colors': LOG_COLORS,
         },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'colorized',
+            'level': 'DEBUG' if DEBUG else 'INFO',
+        },
+        'console_extra': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'colorized_extra',
             'level': 'DEBUG' if DEBUG else 'INFO',
         },
         'file': {
@@ -256,22 +305,44 @@ LOGGING = {
             'backupCount': 20,
             'encoding': 'utf-8',
         },
+        'file_extra': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'debug.log'),
+            'formatter': 'colorized_extra',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 20,
+            'encoding': 'utf-8',
+        },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
             'formatter': 'detailed',
         },
+
     },
     'loggers': {
+        'programmer': {
+            'handlers': ['console'] if DEBUG else ['console', 'file', 'mail_admins'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        },
+        'user_action': {
+            'handlers': ['console_extra'] if DEBUG else ['console_extra', 'file_extra', 'mail_admins'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        },
         'django': {
             'handlers': ['console'] if DEBUG else ['console', 'file', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['file', 'mail_admins'] if not DEBUG else [],
-            'level': 'ERROR',
-            'propagate': False,
+            'handlers': ['console_extra'] if DEBUG else ['console_extra', 'file', 'mail_admins'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'filters': ['request_filter'],
+            'propagate': False,  # Avoid duplication
         },
     },
 }

@@ -1,7 +1,7 @@
 """Validators for account app."""
 
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext as _
+from utils.error_handling import MyErrors
 
 
 def validate_cellphone_length_startswith(cellphone: str) -> None:
@@ -13,4 +13,7 @@ def validate_cellphone_length_startswith(cellphone: str) -> None:
 
     if (not cellphone.isdigit()) or (len(cellphone) != 11) or \
             (not cellphone.startswith('09')):
-        raise ValidationError(_('Cellphone must be 11 digits long and starts with 09'))
+        raise ValidationError(
+            MyErrors.INVALID_CELLPHONE['detail'],
+            MyErrors.INVALID_CELLPHONE['code'],
+        )

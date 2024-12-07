@@ -21,6 +21,7 @@ venv/
 .env
 .env.*
 !.env.tpl
+!.env.db.tpl
 
 # Ignore IDE/editor specific files
 .vscode/
@@ -39,9 +40,7 @@ venv/
 *.orig
 *.pid
 *.seed
-*.cover
 *.coverage
-coverage.xml
 *.cache
 *.egg
 *.egg-info
@@ -54,3 +53,24 @@ staticfiles/
 
 # Ignore media files (if you're handling them outside Docker)
 media/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# local requirements
+requirements.local.txt
+
+# local manage.py
+local_manage.py
