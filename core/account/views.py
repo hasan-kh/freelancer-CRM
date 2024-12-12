@@ -85,6 +85,7 @@ class CustomTokenObtainPairView(APIView):
         }
     )
     def post(self, request):
+        """Post method of custom token obtain pair view."""
         serializer = CustomTokenObtainPairRequestSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
 
@@ -216,6 +217,7 @@ class ChangePasswordView(GenericAPIView):
         ],
     )
     def post(self, request, *args, **kwargs):
+        """Post method of Change password view."""
         serializer = self.get_serializer(data=request.data,
                                          context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -273,6 +275,7 @@ class PasswordResetRequestView(GenericAPIView):
         ],
     )
     def post(self, request, *args, **kwargs):
+        """Post method of password reset request view."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -334,6 +337,7 @@ class PasswordResetView(GenericAPIView):
         ],
     )
     def post(self, request, *args, **kwargs):
+        """Post method of Password Reset view."""
         serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
 
@@ -448,7 +452,7 @@ ManageUserViewUpdateSchema = extend_schema(
         ),
 
     ],
-),
+)
 
 
 @extend_schema_view(

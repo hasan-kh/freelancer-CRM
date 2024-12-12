@@ -1,4 +1,5 @@
 """Tests for the account app views."""
+# pylint: disable=too-many-public-methods
 from datetime import datetime
 from unittest.mock import patch
 
@@ -29,10 +30,12 @@ USER_MANAGE_URL = reverse('account:manage')
 
 
 def create_user(email='user@example.com', password='password123', **params):
+    """Create a user object."""
     return get_user_model().objects.create_user(email=email, password=password, **params)
 
 
 def create_user_complete_fields():
+    """Create a user object with all required and optional fields default provided."""
     params = {
         'first_name': 'john',
         'last_name': 'doe',

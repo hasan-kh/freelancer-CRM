@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
-class MyUserCreationForm(UserCreationForm):
+class MyUserCreationForm(UserCreationForm):  # pylint: disable=too-many-ancestors
     """My custom user creation form."""
 
     class Meta:

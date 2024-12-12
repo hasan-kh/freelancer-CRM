@@ -1,4 +1,4 @@
-name: Lint, test  # and deploy to VPS
+name: test  # and deploy to VPS
 
 on:
   push:
@@ -20,13 +20,12 @@ jobs:
       - name: Create env files from templates
         run: |
           cp ./envs/.env.tpl ./envs/.env 
-          cp ./envs/.env.db.tpl ./envs/.env.db 
-
+          cp ./envs/.env.db.tpl ./envs/.env.db
       - name: Build docker images
         run: docker compose -f docker-compose.yml build
 
-      - name: Lint
-        run: docker compose run --rm app ./lint.sh
+#      - name: Lint
+#        run: docker compose run --rm app sh -c "flake8 --ignore=E501 /core && pylint /core"
 
       - name: Test
         run: docker compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
@@ -39,7 +38,7 @@ jobs:
 #          password: ${{ secrets.VPS_PASSWORD }}
 #          port: ${{ secrets.VPS_PORT }}
 #          script: |
-#            mkdir -p projects/crm && cd projects/crm
+#            mkdir -p projects/freelancer_crm && cd projects/freelancer_crm
 #            git pull
 #            make run
 

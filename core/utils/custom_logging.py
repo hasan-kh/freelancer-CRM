@@ -20,7 +20,7 @@ class IncludeClientColorFormatter(ColoredFormatter):
         return super().format(record)
 
 
-class RequestFilter(Filter):
+class RequestFilter(Filter):  # pylint: disable=too-few-public-methods
     """Request filter which provides client_ip and user_id for log message."""
     def filter(self, record):
         # Assume `record.request` is passed explicitly in logging calls

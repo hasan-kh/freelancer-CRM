@@ -1,3 +1,4 @@
+"""Tasks module for celery."""
 import socket
 from smtplib import SMTPException, SMTPRecipientsRefused, SMTPSenderRefused, SMTPDataError
 
@@ -61,7 +62,8 @@ def task_send_email_multi_alternatives(subject: str, message: str, recipient_ema
         programmer_logger.error(f'An SMTP error occurred: {e}')
     except socket.timeout as e:
         programmer_logger.error(f'The connection to the SMTP server timed out: {e}')
-    except Exception as e:
+    # Since I might forget to include an exception
+    except Exception as e:  # pylint: disable=broad-exception-caught
         programmer_logger.error(f'An unexpected error occurred when sending email: {e}')
 
 

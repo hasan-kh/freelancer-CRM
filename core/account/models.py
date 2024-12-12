@@ -1,5 +1,6 @@
 """Models for account app."""
 import random
+from string import digits
 from datetime import timedelta
 
 from django.conf import settings
@@ -55,7 +56,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 def generate_random_code() -> str:
     """Returns string of random number."""
-    from string import digits
     return ''.join(random.choice(digits) for _ in range(settings.PASSWORD_RESET_CODE_LENGTH))
 
 

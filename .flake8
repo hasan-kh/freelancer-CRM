@@ -1,0 +1,10 @@
+[flake8]
+exclude =
+    migrations,
+    envs,
+    __pycache__,
+    .git,
+    scripts,
+    *.pyc
+
+ignore = E501,

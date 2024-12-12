@@ -8,7 +8,7 @@ from django.test import TestCase
 from rest_framework import serializers
 
 
-class MyErrors:
+class MyErrors:  # pylint: disable=too-few-public-methods
     """My custom errors, which error contains detail and code keys."""
 
     PASSWORD_TOO_SHORT = {

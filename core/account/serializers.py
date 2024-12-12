@@ -2,7 +2,8 @@
 from datetime import datetime
 
 from django.conf import settings
-from django.contrib.auth import password_validation, get_user_model, authenticate
+from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth.password_validation import validate_password as dj_validate_password
 
 from rest_framework import serializers
 
@@ -17,10 +18,12 @@ from utils.custom_logging import user_action_logger, get_ip_from_request
 
 
 class GenericSuccessSerializer(serializers.Serializer):
+    """Generic success serializer which has only a detail message."""
     detail = serializers.CharField(help_text='A success message')
 
 
 class CustomTokenObtainPairRequestSerializer(serializers.Serializer):
+    """Custom token obtain pair request serializer."""
     email = serializers.EmailField(max_length=254)
     password = serializers.CharField(max_length=128,
                                      write_only=True,
@@ -38,7 +41,7 @@ class CustomTokenObtainPairRequestSerializer(serializers.Serializer):
                 'user_id': 'Anonymous',
                 'client_ip': get_ip_from_request(request)
             })
-            raise serializers.ValidationError(
+            raise serializers.ValidationError(  # pylint: disable=raise-missing-from
                 detail=MyErrors.USER_EMAIL_NOT_FOUND['detail'].format(email=value),
                 code=MyErrors.USER_EMAIL_NOT_FOUND['code'],
             )
@@ -129,7 +132,8 @@ class ChangePasswordSerializer(serializers.Serializer):
     new_password1 = serializers.CharField(write_only=True,
                                           trim_whitespace=False,
                                           style={'input_type': 'password'},
-                                          max_length=128)
+                                          max_length=128,
+                                          validators=[dj_validate_password])
     new_password2 = serializers.CharField(write_only=True,
                                           trim_whitespace=False,
                                           style={'input_type': 'password'},
@@ -145,18 +149,6 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 detail=MyErrors.PASSWORD_INCORRECT['detail'],
                 code=MyErrors.PASSWORD_INCORRECT['code']
-            )
-        return value
-
-    def validate_new_password1(self, value):
-        """Validate new password's strength."""
-        request = self.context['request']
-        user = request.user
-        try:
-            password_validation.validate_password(value, user=user)
-        except serializers.ValidationError as e:
-            raise serializers.ValidationError(
-                {'new_password1': e.messages}
             )
         return value
 
@@ -201,7 +193,7 @@ class PasswordResetRequestSerializer(serializers.Serializer):
             user_action_logger.warning(f'Password reset fails, account with email({value}) not found.',
                                        extra={'user_id': 'Anonymous',
                                               'client_ip': get_ip_from_request(request)})
-            raise serializers.ValidationError(
+            raise serializers.ValidationError(  # pylint: disable=raise-missing-from
                 detail=MyErrors.USER_EMAIL_NOT_FOUND['detail'].format(email=value),
                 code=MyErrors.USER_EMAIL_NOT_FOUND['code'],
             )
@@ -225,7 +217,8 @@ class PasswordResetSerializer(serializers.Serializer):
     new_password1 = serializers.CharField(write_only=True,
                                           trim_whitespace=False,
                                           style={'input_type': 'password'},
-                                          max_length=128)
+                                          max_length=128,
+                                          validators=[dj_validate_password])
     new_password2 = serializers.CharField(write_only=True,
                                           trim_whitespace=False,
                                           style={'input_type': 'password'},
@@ -242,7 +235,7 @@ class PasswordResetSerializer(serializers.Serializer):
                                        extra={'user_id': 'Anonymous',
                                               'client_ip': get_ip_from_request(request)})
 
-            raise serializers.ValidationError(
+            raise serializers.ValidationError(  # pylint: disable=raise-missing-from
                 detail=MyErrors.CODE_INVALID['detail'],
                 code=MyErrors.CODE_INVALID['code'],
             )
@@ -255,20 +248,6 @@ class PasswordResetSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 detail=MyErrors.CODE_EXPIRED['detail'],
                 code=MyErrors.CODE_EXPIRED['code'],
-            )
-        return value
-
-    def validate_new_password1(self, value):
-        """Validate new password's strength."""
-        request = self.context['request']
-        try:
-            password_validation.validate_password(value)
-        except serializers.ValidationError as e:
-            user_action_logger.warning('Password reset fails, invalid new password format.',
-                                       extra={'user_id': 'Anonymous',
-                                              'client_ip': get_ip_from_request(request)})
-            raise serializers.ValidationError(
-                {'new_password1': e.messages}
             )
         return value
 
@@ -309,7 +288,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ('id', 'email', 'password', 'password_repeat',
                   'first_name', 'last_name', 'cellphone')
-        extra_kwargs = {'password': {'write_only': True},
+        extra_kwargs = {'password': {'write_only': True, 'validators': [dj_validate_password]},
                         'first_name': {'required': True},
                         'last_name': {'required': True},
                         'cellphone': {'required': True,
@@ -317,16 +296,6 @@ class RegisterSerializer(serializers.ModelSerializer):
                                                    'starts with 09.'},
                         }
         read_only_fields = ('id',)
-
-    def validate_password(self, value):
-        """Validate password strength."""
-        try:
-            password_validation.validate_password(value)
-        except serializers.ValidationError as e:
-            raise serializers.ValidationError(
-                {'new_password1': e.messages}
-            )
-        return value
 
     def validate(self, attrs):
         """Validate password and password_retry."""
