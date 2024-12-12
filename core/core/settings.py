@@ -21,8 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Logs directory
 LOG_DIR = BASE_DIR / 'logs'
-if not os.path.exists(LOG_DIR):
-    os.mkdir(LOG_DIR)
+os.makedirs(LOG_DIR, exist_ok=True)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
