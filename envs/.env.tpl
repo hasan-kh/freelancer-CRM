@@ -21,3 +21,14 @@ PASSWORD_RESET_CODE_LENGTH=6
 PASSWORD_RESET_CODE_EXPIRE_MINUTES=10
 
 ADMINS=admin:admin@example.com,full name:manger@example.com
+
+ADMIN_SITE_HEADER='Django Admin'
+ADMIN_INDEX_TITLE=Administration
+ADMIN_SITE_TITLE='Django Admin'
+
+# Activate OTP(One Time Password) for staff log in to admin, 1 for active, 0 for inactive
+OTP_STAFF_ACTIVE=1
+# The maximum number of seconds a token is valid.
+OTP_EMAIL_TOKEN_VALIDITY=300
+OTP_TOTP_ISSUER=website_name
+

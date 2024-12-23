@@ -6,3 +6,6 @@ class AccountConfig(AppConfig):
     """App config for account."""
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'account'
+
+    def ready(self) -> None:
+        from account import signals  # noqa: F401  # pylint: disable=import-outside-toplevel, unused-import

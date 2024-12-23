@@ -12,10 +12,11 @@ class UserAdmin(Auth_UserAdmin):
     add_form = MyUserCreationForm
     form = MyUserChangeForm
     model = User
-    list_display = ('email', 'first_name', 'last_name', 'cellphone', 'is_staff', 'is_active')
+    list_display = ('id', 'email', 'first_name', 'last_name', 'cellphone', 'is_staff', 'is_active')
+    list_display_links = ('id', 'email')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     search_fields = ('first_name', 'last_name', 'email', 'cellphone')
-    readonly_fields = ('last_login', 'date_joined')
+    readonly_fields = ('id', 'last_login', 'date_joined')
     ordering = ('-id',)
     filter_horizontal = (
         'groups',
@@ -23,7 +24,7 @@ class UserAdmin(Auth_UserAdmin):
     )
 
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('id', 'email', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'cellphone')}),
         (
             _('Permissions'),
@@ -44,8 +45,8 @@ class UserAdmin(Auth_UserAdmin):
         (None, {
             "classes": ("wide",),
             "fields": (
-                "email", "password1", "password2", "is_active",
-                "is_staff", "groups", "user_permissions"
+                "email", "cellphone", "password1", "password2",
+                "is_active", "is_staff", "groups", "user_permissions"
             )}
          ),
     )

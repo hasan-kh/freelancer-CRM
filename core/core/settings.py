@@ -53,6 +53,9 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'django_otp.plugins.otp_email',
     'django_extensions',
     'account.apps.AccountConfig',
 ]
@@ -64,6 +67,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -175,6 +179,18 @@ PASSWORD_RESET_CODE_EXPIRE_MINUTES = int(os.environ.get(
 ))
 
 ADMINS = [tuple(pair.split(':')) for pair in os.environ.get('ADMINS', '').split(',') if pair]
+
+ADMIN_SITE_HEADER = os.environ.get('ADMIN_SITE_HEADER', 'Django Admin')
+ADMIN_INDEX_TITLE = os.environ.get('ADMIN_INDEX_TITLE', 'Administration')
+ADMIN_SITE_TITLE = os.environ.get('ADMIN_SITE_TITLE', 'Django Admin')
+
+# OTP (One Time Password) just for staff log into admin panel
+OTP_STAFF_ACTIVE = bool(int(os.environ.get('OTP_STAFF_ACTIVE', 1)))
+OTP_EMAIL_TOKEN_VALIDITY = 300  # The maximum number of seconds a token is valid.
+OTP_TOTP_ISSUER = os.environ.get('OTP_TOTP_ISSUER', None)
+# Should be a HTTPS URL pointing to a square PNG image.
+# This will be read and displayed by some authenticator applications.
+# OTP_TOTP_IMAGE = os.environ.get('OTP_TOTP_IMAGE')
 
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
 EMAIL_HOST = os.environ.get('EMAIL_HOST')

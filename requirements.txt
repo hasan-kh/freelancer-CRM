@@ -6,6 +6,10 @@ drf-spectacular>=0.27.2,<0.28
 colorlog>=6.9.0,<6.10
 python-magic>=0.4.27,<0.5 # this is based on libmagic OS library
 
+# For admin 2FA
+django-otp>=1.5.4,<1.6
+qrcode>=8.0,<8.1
+
 # Lint, optional
 flake8>=7.1.1,<7.2
 pylint-django>=2.5.5,<2.6

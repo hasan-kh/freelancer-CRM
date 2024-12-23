@@ -1,12 +1,16 @@
 """Tasks module for celery."""
 import socket
 from smtplib import SMTPException, SMTPRecipientsRefused, SMTPSenderRefused, SMTPDataError
+from typing import Tuple
 
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.contrib.sites.models import Site
 from django.conf import settings
 
+from django_otp.plugins.otp_email.models import EmailDevice
+
+from account.models import User
 from utils.custom_logging import programmer_logger
 from utils.email_defaults import (
     CHANGE_PASSWORD_EMAIL,
@@ -98,3 +102,17 @@ def task_password_reset_request_mail(user_email: str, password_reset_code: str) 
             'user_email': user_email,
             'password_reset_code': password_reset_code}
     )
+
+
+def task_create_otp_email_device_for_staff(user: User,
+                                           device_name: str = "Receive token via email") -> Tuple[EmailDevice, bool]:
+    """
+    Create an OTP (One Time Password) email device for user.
+    :param user: user instance
+    :param device_name: device name which shows up in admin login page
+    :return: (EmailDevice object, created), where created is a boolean specifying whether an object was created.
+    """
+    email_device, created = EmailDevice.objects.get_or_create(user=user, name=device_name)
+    programmer_logger.info(f'OTP email device object for staff({user}) creation status: {created} '
+                           f'id: {email_device.id}')
+    return email_device, created

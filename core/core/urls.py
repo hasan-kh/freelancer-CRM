@@ -21,6 +21,9 @@ from django.conf.urls.static import static
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+from django_otp.admin import OTPAdminSite
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -34,7 +37,9 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
+if settings.OTP_STAFF_ACTIVE is True:
+    admin.site.__class__ = OTPAdminSite
 
-admin.site.site_header = 'Freelancer CRM'
-admin.site.index_title = 'Administration'
-admin.site.site_title = 'Freelancer CRM'
+admin.site.site_header = settings.ADMIN_SITE_HEADER
+admin.site.index_title = settings.ADMIN_INDEX_TITLE
+admin.site.site_title = settings.ADMIN_SITE_TITLE
