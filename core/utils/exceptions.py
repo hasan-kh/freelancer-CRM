@@ -14,7 +14,7 @@ def custom_exception_handler(exc, context):
     # Get the default response from DRF's exception handler
     response = exception_handler(exc, context)
 
-    if response is not None:
+    if (response is not None) and (response.status_code == 400):
         programmer_logger.debug(f'Errors through my custom exception handler: \n{response.data.items()}')
 
         # Dictionary to store each error under its field name

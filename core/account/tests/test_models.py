@@ -146,6 +146,18 @@ class UserModelTests(TestCase):
             self.user_model.objects.create_user(email='jack@example.com', password='password123',
                                                 cellphone=existing_cellphone)
 
+    def test_user_post_save_signal_non_staff_user(self) -> None:
+        """Test post save signal for user model doesn't create email device object for non staff."""
+        user = self.user_model.objects.create_user(email='user@example.com', password='password123')
+
+        self.assertFalse(user.emaildevice_set.exists())
+
+    def test_user_post_save_signal_staff_user(self) -> None:
+        """Test post save signal for user model creates email device object for staff."""
+        user = self.user_model.objects.create_user(email='user@example.com', password='password123', is_staff=True)
+
+        self.assertTrue(user.emaildevice_set.exists())
+
 
 class PasswordRestCodeModelTests(TestCase):
     """Test PasswordRestCode model."""

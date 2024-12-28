@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.core.cache import cache
 
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -49,6 +50,9 @@ class PublicAccountViewsTests(TestCase):
 
     def setUp(self) -> None:
         self.client = APIClient()
+
+    def tearDown(self) -> None:
+        cache.clear()  # Clear throttle cache after each test
 
     def test_login_success(self) -> None:
         """Test user can log in successfully."""
@@ -174,6 +178,9 @@ class PublicAccountViewsTests(TestCase):
                     field_name=sample[2],
                     expected_error_code=MyErrors.BLANK['code'],
                 )
+
+            # Clear throttle cache after each test
+            cache.clear()
 
         # Test both fields blank
         payload = {'email': '', 'password': ''}
@@ -359,6 +366,8 @@ class PublicAccountViewsTests(TestCase):
                                                        response_data=res.data,
                                                        field_name='new_password1',
                                                        expected_error=MyErrors.PASSWORD_TOO_SHORT)
+            # Clear throttle cache after each test
+            cache.clear()
 
         # Check current password stays the same
         user.refresh_from_db()
@@ -420,6 +429,9 @@ class PublicAccountViewsTests(TestCase):
                     field_name=payload[3],
                     expected_error_code=MyErrors.BLANK['code'],
                 )
+
+            # Clear throttle cache after each test
+            cache.clear()
 
         # Check current password stays the same
         user.refresh_from_db()
@@ -549,6 +561,25 @@ class PublicAccountViewsTests(TestCase):
                                                        field_name='cellphone',
                                                        expected_error=MyErrors.INVALID_CELLPHONE)
 
+            # Clear throttle cache after each test
+            cache.clear()
+
+    # def test_login_minute_throttle(self) -> None:
+    #     """Test login view 3 requests/minute throttle"""
+    #     requests_per_minute = 3
+    #     payload = {
+    #         'email': 'someuser@example.com',
+    #         'password': 'password123'
+    #     }
+    #     for _ in range(requests_per_minute):
+    #         res = self.client.post(USER_LOGIN_URL, payload)
+    #         self.assertNotEqual(res.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+    #
+    #     # 4th request should be throttled
+    #     res = self.client.post(USER_LOGIN_URL, payload)
+    #     self.assertEqual(res.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+    #     self.assertIn('retry-after', res.headers)
+
 
 class PrivateAccountViewsTests(TestCase):
     """Test the private authenticated features of the account views api."""
@@ -564,6 +595,10 @@ class PrivateAccountViewsTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
         self.client.force_authenticate(self.user)
+
+    def tearDown(self) -> None:
+        # Clear throttle cache after each test
+        cache.clear()
 
     @patch('account.views.task_change_password_mail', return_value=1)
     def test_user_change_password_successfully(self, mocked_send_mail) -> None:
@@ -637,6 +672,8 @@ class PrivateAccountViewsTests(TestCase):
                                                        response_data=res.data,
                                                        field_name='new_password1',
                                                        expected_error=MyErrors.PASSWORD_TOO_SHORT)
+            # Clear throttle cache after each test
+            cache.clear()
 
         # Check current password stays the same
         self.user.refresh_from_db()
@@ -693,6 +730,9 @@ class PrivateAccountViewsTests(TestCase):
                     field_name=payload[3],
                     expected_error_code=MyErrors.BLANK['code'],
                 )
+
+            # Clear throttle cache after each test
+            cache.clear()
 
         # Check current password stays the same
         self.user.refresh_from_db()

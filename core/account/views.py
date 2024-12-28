@@ -23,6 +23,8 @@ from utils.tasks import (
 )
 from utils.custom_logging import user_action_logger
 from utils.functions import get_ip_from_request
+from utils import throttling as my_throttling
+
 from account.models import PasswordResetCode
 from account.serializers import (
     CustomTokenObtainPairRequestSerializer,
@@ -51,6 +53,8 @@ class CustomTokenObtainPairView(APIView):
     """
     Custom implementation of the TokenObtainPairView with defining serializers and additional data.
     """
+    throttle_classes = [my_throttling.AnonMin5Throttle,
+                        my_throttling.AnonHour30Throttle]
 
     @extend_schema(
         summary='Authenticate user (JWT Token)',
@@ -111,6 +115,8 @@ class CustomTokenBlacklistView(TokenBlacklistView):
     """
     Custom implementation of the TokenBlacklistView Just to define documentation.
     """
+    throttle_classes = [my_throttling.AnonMin10Throttle]
+
     @extend_schema(
         summary='Logout',
         description='Add refresh token to Black list.',
@@ -139,6 +145,8 @@ class CustomTokenRefreshView(TokenRefreshView):
     """
     Custom implementation of the TokenRefreshView which includes access token and access_expires_at fields.
     """
+    throttle_classes = [my_throttling.AnonMin15Throttle]
+
     @extend_schema(
         summary='Refresh access token.',
         description='Refresh access token by posting valid and not expired refresh token.',
@@ -184,6 +192,8 @@ class ChangePasswordView(GenericAPIView):
     """Update user password after confirm current password."""
     permission_classes = [IsAuthenticated]
     serializer_class = ChangePasswordSerializer
+    throttle_classes = [my_throttling.UserMin2Throttle,
+                        my_throttling.UserHour10Throttle]
 
     @extend_schema(
         summary='Change authenticated user password.',
@@ -245,6 +255,9 @@ class PasswordResetRequestView(GenericAPIView):
     """
     permission_classes = [AllowAny]
     serializer_class = PasswordResetRequestSerializer
+    throttle_classes = [my_throttling.AnonMin3Throttle,
+                        my_throttling.AnonHour10Throttle,
+                        my_throttling.AnonDay20Throttle]
 
     @extend_schema(
         summary='Password reset request.',
@@ -305,6 +318,8 @@ class PasswordResetView(GenericAPIView):
     """
     permission_classes = [AllowAny]
     serializer_class = PasswordResetSerializer
+    throttle_classes = [my_throttling.AnonMin5Throttle,
+                        my_throttling.AnonHour30Throttle]
 
     @extend_schema(
         summary='Password reset.',
@@ -364,6 +379,8 @@ class RegisterView(CreateAPIView):
     """Create a new user account."""
     permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
+    throttle_classes = [my_throttling.AnonMin3Throttle,
+                        my_throttling.AnonHour10Throttle]
 
     @extend_schema(
         summary='Create a new user account.',
@@ -488,6 +505,8 @@ class ManageUserView(RetrieveUpdateAPIView):
     """Retrieve and update authenticated user data."""
     permission_classes = [IsAuthenticated]
     serializer_class = ManageUserSerializer
+    throttle_classes = [my_throttling.UserMin20Throttle,
+                        my_throttling.UserDay100Throttle]
 
     def get_object(self):
         """Return authenticated user."""

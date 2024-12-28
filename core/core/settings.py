@@ -205,8 +205,48 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'EXCEPTION_HANDLER': 'utils.exceptions.custom_exception_handler'
+    'EXCEPTION_HANDLER': 'utils.exceptions.custom_exception_handler',
+
+    'DEFAULT_THROTTLE_RATES': {
+
+        # Anonymous throttles
+        #                   Requests per minute
+        'anon_min_3': '3/min',
+        'anon_min_5': '5/min',
+        'anon_min_10': '10/min',
+        'anon_min_15': '15/min',
+        #                   Requests per hour
+        'anon_hour_10': '10/hour',
+        'anon_hour_15': '15/hour',
+        'anon_hour_30': '30/hour',
+        #                   Requests per day
+        'anon_day_20': '20/day',
+
+        # User throttles
+        #                   Requests per minute
+        'user_min_2': '2/min',
+        'user_min_20': '20/min',
+        #                   Requests per hour
+        'user_hour_10': '10/hour',
+        #                   Requests per day
+        'user_day_100': '100/day',
+    }
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': os.environ.get('REDIS_LOCATION', 'redis://127.0.0.1:6379/1'),  # Replace with your Redis server address and database
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+    }
+}
+
+# Optional: Prefix for all cache keys
+_redis_key_prefix = os.environ.get('REDIS_KEY_PREFIX', None)
+if _redis_key_prefix:
+    CACHES['default']['KEY_PREFIX'] = _redis_key_prefix.lower().replace(' ', '')
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Project CRM',

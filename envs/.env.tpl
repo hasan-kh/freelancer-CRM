@@ -32,3 +32,8 @@ OTP_STAFF_ACTIVE=1
 OTP_EMAIL_TOKEN_VALIDITY=300
 OTP_TOTP_ISSUER=website_name
 
+# Redis
+# redis location/URL protocol://IP:PORT/DATABASE
+REDIS_LOCATION=redis://127.0.0.1:6379/1
+# Optional: Prefix for all cache keys, all lower, without white space
+REDIS_KEY_PREFIX=myapp
