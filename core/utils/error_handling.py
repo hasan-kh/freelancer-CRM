@@ -72,6 +72,13 @@ class MyErrors:  # pylint: disable=too-few-public-methods
         'code': 'incorrect_credentials'
     }
 
+    TOO_MANY_REQUESTS = {
+        'detail': _('You have exceeded the request limit. Please try again later.'),
+        'code': 'throttled'
+    }
+
+
+#               400 BadRequest error
 
 # Error serializers
 class FieldErrorDetailSerializer(serializers.Serializer):
@@ -80,13 +87,13 @@ class FieldErrorDetailSerializer(serializers.Serializer):
     code = serializers.CharField()
 
 
-class ErrorResponseSerializer(serializers.Serializer):
+class Error400ResponseSerializer(serializers.Serializer):
     """Serializing all errors in a dict, each field error can contain one or more FieldErrorDetail."""
     errors = serializers.DictField(child=FieldErrorDetailSerializer(many=True))
 
 
 # Error handling functions
-def get_error_response(response_data: dict, field_name: str) -> Dict[str, str]:
+def get_400_error_response(response_data: dict, field_name: str) -> Dict[str, str]:
     """
     :param response_data: response of HTTP request
     :param field_name: field name like: username, non_field_error
@@ -96,8 +103,8 @@ def get_error_response(response_data: dict, field_name: str) -> Dict[str, str]:
     return {'detail': error['detail'], 'code': error['code']}
 
 
-def assert_expected_error_in_response_data(test_case_object: TestCase, response_data: dict, field_name: str,
-                                           expected_error: dict, expected_error_context: dict = None) -> None:
+def assert_expected_400_error_in_response_data(test_case_object: TestCase, response_data: dict, field_name: str,
+                                               expected_error: dict, expected_error_context: dict = None) -> None:
     """
     Assert that the response contains the expected error detail and code for a specific field.
     :param test_case_object: Test case that this method runs in
@@ -125,8 +132,8 @@ def assert_expected_error_in_response_data(test_case_object: TestCase, response_
     test_case_object.assertIn(expected_error, field_errors)
 
 
-def assert_expected_error_code_in_response_data(test_case_object: TestCase, response_data: dict, field_name: str,
-                                                expected_error_code: str) -> None:
+def assert_expected_400_error_code_in_response_data(test_case_object: TestCase, response_data: dict, field_name: str,
+                                                    expected_error_code: str) -> None:
     """
     Assert that the response contains the expected error code for a specific field.
     :param test_case_object: Test case that this method runs in
@@ -146,3 +153,18 @@ def assert_expected_error_code_in_response_data(test_case_object: TestCase, resp
     error_codes = [error.get('code') for error in field_errors]
 
     test_case_object.assertIn(expected_error_code, error_codes)
+
+
+#               429 Too Many Requests
+# 429 Error serializer
+class Error429ResponseSerializer(serializers.Serializer):
+    """Too many requests 429 error serializer."""
+    code = serializers.CharField(
+        default=MyErrors.TOO_MANY_REQUESTS['code'],
+        help_text='Error code for too many requests.'
+    )
+    detail = serializers.CharField(
+        default=MyErrors.TOO_MANY_REQUESTS['detail'],
+        help_text='Detailed error message'
+    )
+    retry_after = serializers.IntegerField(help_text='Retry after this many seconds')

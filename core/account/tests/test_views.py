@@ -15,7 +15,7 @@ from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from utils.error_handling import (
-    assert_expected_error_in_response_data, assert_expected_error_code_in_response_data,
+    assert_expected_400_error_in_response_data, assert_expected_400_error_code_in_response_data,
     MyErrors
 )
 from account.models import PasswordResetCode, generate_random_code
@@ -103,13 +103,9 @@ class PublicAccountViewsTests(TestCase):
             res = self.client.post(USER_LOGIN_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(
-            test_case_object=self,
-            response_data=res.data,
-            field_name='email',
-            expected_error=MyErrors.USER_EMAIL_NOT_FOUND,
-            expected_error_context={'email': payload['email']}
-        )
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data, field_name='email',
+                                                   expected_error=MyErrors.USER_EMAIL_NOT_FOUND,
+                                                   expected_error_context={'email': payload['email']})
 
         # Assert log
         self.assertEqual(log.records[0].message, f'Login failed, email({payload["email"]}) not found.')
@@ -123,13 +119,9 @@ class PublicAccountViewsTests(TestCase):
             res = self.client.post(USER_LOGIN_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(
-            test_case_object=self,
-            response_data=res.data,
-            field_name='email',
-            expected_error=MyErrors.USER_INACTIVE,
-            expected_error_context={'email': payload['email']}
-        )
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data, field_name='email',
+                                                   expected_error=MyErrors.USER_INACTIVE,
+                                                   expected_error_context={'email': payload['email']})
 
         # Assert log
         log_record = log.records[0]
@@ -145,12 +137,9 @@ class PublicAccountViewsTests(TestCase):
             res = self.client.post(USER_LOGIN_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(
-            test_case_object=self,
-            response_data=res.data,
-            field_name='non_field_errors',
-            expected_error=MyErrors.INCORRECT_CREDENTIALS,
-        )
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data,
+                                                   field_name='non_field_errors',
+                                                   expected_error=MyErrors.INCORRECT_CREDENTIALS)
 
         # Assert log
         self.assertEqual(log.records[0].message, f'Login failed, incorrect credentials({payload["email"]}).')
@@ -172,12 +161,9 @@ class PublicAccountViewsTests(TestCase):
                 res = self.client.post(USER_LOGIN_URL, payload)
 
                 self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-                assert_expected_error_code_in_response_data(
-                    test_case_object=self,
-                    response_data=res.data,
-                    field_name=sample[2],
-                    expected_error_code=MyErrors.BLANK['code'],
-                )
+                assert_expected_400_error_code_in_response_data(test_case_object=self, response_data=res.data,
+                                                                field_name=sample[2],
+                                                                expected_error_code=MyErrors.BLANK['code'])
 
             # Clear throttle cache after each test
             cache.clear()
@@ -187,18 +173,11 @@ class PublicAccountViewsTests(TestCase):
         res = self.client.post(USER_LOGIN_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-        assert_expected_error_code_in_response_data(
-            test_case_object=self,
-            response_data=res.data,
-            field_name='email',
-            expected_error_code=MyErrors.BLANK['code'],
-        )
-        assert_expected_error_code_in_response_data(
-            test_case_object=self,
-            response_data=res.data,
-            field_name='password',
-            expected_error_code=MyErrors.BLANK['code'],
-        )
+        assert_expected_400_error_code_in_response_data(test_case_object=self, response_data=res.data,
+                                                        field_name='email', expected_error_code=MyErrors.BLANK['code'])
+        assert_expected_400_error_code_in_response_data(test_case_object=self, response_data=res.data,
+                                                        field_name='password',
+                                                        expected_error_code=MyErrors.BLANK['code'])
 
     def test_change_password_anon_user_fails(self) -> None:
         """Test that anonymous user can not change the password."""
@@ -235,11 +214,9 @@ class PublicAccountViewsTests(TestCase):
             res = self.client.post(USER_RESET_PASSWORD_REQ_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(test_case_object=self,
-                                               response_data=res.data,
-                                               field_name='email',
-                                               expected_error=MyErrors.USER_EMAIL_NOT_FOUND,
-                                               expected_error_context={'email': payload['email']})
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data, field_name='email',
+                                                   expected_error=MyErrors.USER_EMAIL_NOT_FOUND,
+                                                   expected_error_context={'email': payload['email']})
         # Assert mail did not send
         mocked_send_mail.assert_not_called()
 
@@ -258,11 +235,9 @@ class PublicAccountViewsTests(TestCase):
             res = self.client.post(USER_RESET_PASSWORD_REQ_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(test_case_object=self,
-                                               response_data=res.data,
-                                               field_name='email',
-                                               expected_error=MyErrors.USER_INACTIVE,
-                                               expected_error_context={'email': payload['email']})
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data, field_name='email',
+                                                   expected_error=MyErrors.USER_INACTIVE,
+                                                   expected_error_context={'email': payload['email']})
 
         # Assert mail did not send
         mocked_send_mail.assert_not_called()
@@ -308,10 +283,8 @@ class PublicAccountViewsTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-        assert_expected_error_in_response_data(test_case_object=self,
-                                               response_data=res.data,
-                                               field_name='code',
-                                               expected_error=MyErrors.CODE_INVALID)
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data, field_name='code',
+                                                   expected_error=MyErrors.CODE_INVALID)
 
         # Assert log
         self.assertEqual('Password reset fails, code does not exist.', log.records[0].message)
@@ -331,10 +304,8 @@ class PublicAccountViewsTests(TestCase):
             res = self.client.post(USER_RESET_PASSWORD_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(test_case_object=self,
-                                               response_data=res.data,
-                                               field_name='code',
-                                               expected_error=MyErrors.CODE_EXPIRED)
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data, field_name='code',
+                                                   expected_error=MyErrors.CODE_EXPIRED)
 
         # Assert is_expired method on PasswordResetCode object called once
         mocked_is_expired.assert_called_once()
@@ -362,10 +333,9 @@ class PublicAccountViewsTests(TestCase):
                 res = self.client.post(USER_RESET_PASSWORD_URL, payload)
 
                 self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-                assert_expected_error_in_response_data(test_case_object=self,
-                                                       response_data=res.data,
-                                                       field_name='new_password1',
-                                                       expected_error=MyErrors.PASSWORD_TOO_SHORT)
+                assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data,
+                                                           field_name='new_password1',
+                                                           expected_error=MyErrors.PASSWORD_TOO_SHORT)
             # Clear throttle cache after each test
             cache.clear()
 
@@ -390,10 +360,9 @@ class PublicAccountViewsTests(TestCase):
         self.assertIn('Password reset fails, new passwords do not match.', log.output[0])
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(test_case_object=self,
-                                               response_data=res.data,
-                                               field_name='non_field_errors',
-                                               expected_error=MyErrors.PASSWORDS_DO_NOT_MATCH)
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data,
+                                                   field_name='non_field_errors',
+                                                   expected_error=MyErrors.PASSWORDS_DO_NOT_MATCH)
 
         # Check current password stays the same
         user.refresh_from_db()
@@ -423,12 +392,9 @@ class PublicAccountViewsTests(TestCase):
                 res = self.client.post(USER_RESET_PASSWORD_URL, payload_dict)
 
                 self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-                assert_expected_error_code_in_response_data(
-                    test_case_object=self,
-                    response_data=res.data,
-                    field_name=payload[3],
-                    expected_error_code=MyErrors.BLANK['code'],
-                )
+                assert_expected_400_error_code_in_response_data(test_case_object=self, response_data=res.data,
+                                                                field_name=payload[3],
+                                                                expected_error_code=MyErrors.BLANK['code'])
 
             # Clear throttle cache after each test
             cache.clear()
@@ -488,12 +454,8 @@ class PublicAccountViewsTests(TestCase):
         res = self.client.post(USER_REGISTER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_code_in_response_data(
-            test_case_object=self,
-            response_data=res.data,
-            field_name='email',
-            expected_error_code='unique',
-        )
+        assert_expected_400_error_code_in_response_data(test_case_object=self, response_data=res.data,
+                                                        field_name='email', expected_error_code='unique')
 
     def test_user_register_short_password_fails(self) -> None:
         """Test register user with short password fails."""
@@ -508,10 +470,8 @@ class PublicAccountViewsTests(TestCase):
         res = self.client.post(USER_REGISTER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(test_case_object=self,
-                                               response_data=res.data,
-                                               field_name='password',
-                                               expected_error=MyErrors.PASSWORD_TOO_SHORT)
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data, field_name='password',
+                                                   expected_error=MyErrors.PASSWORD_TOO_SHORT)
 
     def test_user_register_with_missmatch_passwords_fails(self) -> None:
         """Test register user with missmatch passwords fails."""
@@ -527,10 +487,9 @@ class PublicAccountViewsTests(TestCase):
             res = self.client.post(USER_REGISTER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(test_case_object=self,
-                                               response_data=res.data,
-                                               field_name='non_field_errors',
-                                               expected_error=MyErrors.PASSWORDS_DO_NOT_MATCH)
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data,
+                                                   field_name='non_field_errors',
+                                                   expected_error=MyErrors.PASSWORDS_DO_NOT_MATCH)
 
         # Assert log
         self.assertEqual('User register fails, passwords do not match.', log.records[0].message)
@@ -556,10 +515,9 @@ class PublicAccountViewsTests(TestCase):
                 res = self.client.post(USER_REGISTER_URL, payload)
 
                 self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-                assert_expected_error_in_response_data(test_case_object=self,
-                                                       response_data=res.data,
-                                                       field_name='cellphone',
-                                                       expected_error=MyErrors.INVALID_CELLPHONE)
+                assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data,
+                                                           field_name='cellphone',
+                                                           expected_error=MyErrors.INVALID_CELLPHONE)
 
             # Clear throttle cache after each test
             cache.clear()
@@ -637,10 +595,8 @@ class PrivateAccountViewsTests(TestCase):
             res = self.client.post(USER_CHANGE_PASSWORD_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(test_case_object=self,
-                                               response_data=res.data,
-                                               field_name='password',
-                                               expected_error=MyErrors.PASSWORD_INCORRECT)
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data, field_name='password',
+                                                   expected_error=MyErrors.PASSWORD_INCORRECT)
         # Check current password stays the same
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password(self.user_password))
@@ -668,10 +624,9 @@ class PrivateAccountViewsTests(TestCase):
                 res = self.client.post(USER_CHANGE_PASSWORD_URL, payload)
 
                 self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-                assert_expected_error_in_response_data(test_case_object=self,
-                                                       response_data=res.data,
-                                                       field_name='new_password1',
-                                                       expected_error=MyErrors.PASSWORD_TOO_SHORT)
+                assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data,
+                                                           field_name='new_password1',
+                                                           expected_error=MyErrors.PASSWORD_TOO_SHORT)
             # Clear throttle cache after each test
             cache.clear()
 
@@ -691,10 +646,9 @@ class PrivateAccountViewsTests(TestCase):
             res = self.client.post(USER_CHANGE_PASSWORD_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        assert_expected_error_in_response_data(test_case_object=self,
-                                               response_data=res.data,
-                                               field_name='non_field_errors',
-                                               expected_error=MyErrors.PASSWORDS_DO_NOT_MATCH)
+        assert_expected_400_error_in_response_data(test_case_object=self, response_data=res.data,
+                                                   field_name='non_field_errors',
+                                                   expected_error=MyErrors.PASSWORDS_DO_NOT_MATCH)
 
         # Check current password stays the same
         self.user.refresh_from_db()
@@ -724,12 +678,9 @@ class PrivateAccountViewsTests(TestCase):
                 res = self.client.post(USER_CHANGE_PASSWORD_URL, payload_dict)
 
                 self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-                assert_expected_error_code_in_response_data(
-                    test_case_object=self,
-                    response_data=res.data,
-                    field_name=payload[3],
-                    expected_error_code=MyErrors.BLANK['code'],
-                )
+                assert_expected_400_error_code_in_response_data(test_case_object=self, response_data=res.data,
+                                                                field_name=payload[3],
+                                                                expected_error_code=MyErrors.BLANK['code'])
 
             # Clear throttle cache after each test
             cache.clear()
@@ -813,19 +764,11 @@ class PrivateAccountViewsTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-        assert_expected_error_code_in_response_data(
-            test_case_object=self,
-            response_data=res.data,
-            field_name='email',
-            expected_error_code='unique',
-        )
+        assert_expected_400_error_code_in_response_data(test_case_object=self, response_data=res.data,
+                                                        field_name='email', expected_error_code='unique')
 
-        assert_expected_error_code_in_response_data(
-            test_case_object=self,
-            response_data=res.data,
-            field_name='email',
-            expected_error_code='unique',
-        )
+        assert_expected_400_error_code_in_response_data(test_case_object=self, response_data=res.data,
+                                                        field_name='email', expected_error_code='unique')
 
         self.user.refresh_from_db()
 
@@ -846,19 +789,11 @@ class PrivateAccountViewsTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-        assert_expected_error_code_in_response_data(
-            test_case_object=self,
-            response_data=res.data,
-            field_name='email',
-            expected_error_code='unique',
-        )
+        assert_expected_400_error_code_in_response_data(test_case_object=self, response_data=res.data,
+                                                        field_name='email', expected_error_code='unique')
 
-        assert_expected_error_code_in_response_data(
-            test_case_object=self,
-            response_data=res.data,
-            field_name='cellphone',
-            expected_error_code='unique',
-        )
+        assert_expected_400_error_code_in_response_data(test_case_object=self, response_data=res.data,
+                                                        field_name='cellphone', expected_error_code='unique')
 
         self.user.refresh_from_db()
 

@@ -2,6 +2,7 @@ DEBUG=0
 SECRET_KEY=changeme
 ALLOWED_HOSTS=127.0.0.1,localhost
 JWT_SIGNING_KEY=changeme
+TIME_ZONE=Asia/Tehran
 
 DB_HOST=db
 DB_PORT=5432

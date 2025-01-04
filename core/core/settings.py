@@ -143,7 +143,7 @@ LANGUAGES = [
 LOCALE_PATHS = [
     # BASE_DIR / "trans/locale/fa",
 ]
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.environ.get('TIME_ZONE', 'UTC')
 
 USE_I18N = True
 

@@ -16,7 +16,7 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 
 from drf_spectacular.utils import extend_schema, OpenApiExample, extend_schema_view, OpenApiResponse, inline_serializer
 
-from utils.error_handling import ErrorResponseSerializer
+from utils.error_handling import Error400ResponseSerializer, Error429ResponseSerializer
 from utils.tasks import (
     task_change_password_mail,
     task_password_reset_request_mail,
@@ -41,11 +41,16 @@ GenericOpenApiResponse400 = OpenApiResponse(
     description='Validation error occurred.Errors contain keys for '
     '`field name` (which means validation error raised for a certain field) or '
     '`non_field_errors` for errors that are not tied to a single field.',
-    response=ErrorResponseSerializer,
+    response=Error400ResponseSerializer,
 )
 
 GenericOpenApiResponse401 = OpenApiResponse(
     description='Not authorized: invalid or expired token or not including authorization header.',
+)
+
+GenericOpenApiResponse429 = OpenApiResponse(
+    description='Too many requests',
+    response=Error429ResponseSerializer,
 )
 
 
@@ -86,6 +91,7 @@ class CustomTokenObtainPairView(APIView):
                 ],
             ),
             400: GenericOpenApiResponse400,
+            429: GenericOpenApiResponse429,
         }
     )
     def post(self, request):
@@ -134,7 +140,9 @@ class CustomTokenBlacklistView(TokenBlacklistView):
             400: GenericOpenApiResponse400,
             401: OpenApiResponse(
                 description='Invalid, expired or black listed refresh token.'
-            )
+            ),
+            429: GenericOpenApiResponse429,
+
         },
     )
     def post(self, request: Request, *args, **kwargs) -> Response:
@@ -180,7 +188,8 @@ class CustomTokenRefreshView(TokenRefreshView):
             400: GenericOpenApiResponse400,
             401: OpenApiResponse(
                 description='Invalid, expired or black listed refresh token.'
-            )
+            ),
+            429: GenericOpenApiResponse429,
         },
     )
     def post(self, request: Request, *args, **kwargs) -> Response:
@@ -211,7 +220,8 @@ class ChangePasswordView(GenericAPIView):
                     )
                 ]
             ),
-            400: GenericOpenApiResponse400
+            400: GenericOpenApiResponse400,
+            429: GenericOpenApiResponse429,
         },
         examples=[
             OpenApiExample(
@@ -276,6 +286,7 @@ class PasswordResetRequestView(GenericAPIView):
                 ]
             ),
             400: GenericOpenApiResponse400,
+            429: GenericOpenApiResponse429,
         },
         examples=[
             OpenApiExample(
@@ -338,6 +349,7 @@ class PasswordResetView(GenericAPIView):
                 ]
             ),
             400: GenericOpenApiResponse400,
+            429: GenericOpenApiResponse429,
         },
         examples=[
             OpenApiExample(
@@ -405,6 +417,7 @@ class RegisterView(CreateAPIView):
                 ]
             ),
             400: GenericOpenApiResponse400,
+            429: GenericOpenApiResponse429,
         },
         examples=[
             OpenApiExample(
@@ -454,6 +467,7 @@ ManageUserViewUpdateSchema = extend_schema(
         ),
         400: GenericOpenApiResponse400,
         401: GenericOpenApiResponse401,
+        429: GenericOpenApiResponse429,
 
     },
     examples=[
@@ -495,6 +509,7 @@ ManageUserViewUpdateSchema = extend_schema(
                 ]
             ),
             401: GenericOpenApiResponse401,
+            429: GenericOpenApiResponse429,
         },
     ),
     patch=ManageUserViewUpdateSchema,
