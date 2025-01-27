@@ -155,6 +155,49 @@ def assert_expected_400_error_code_in_response_data(test_case_object: TestCase, 
     test_case_object.assertIn(expected_error_code, error_codes)
 
 
+#               401 Not Authorized
+# 429 Error serializer
+class Error401ResponseSerializer(serializers.Serializer):
+    """Not authorized 401 error serializer."""
+    detail = serializers.CharField()
+    code = serializers.CharField(required=False)
+    messages = serializers.ListField(
+        child=serializers.DictField(),
+        required=False,
+    )
+
+
+# 401 different error messages, these messages belongs to simplejwt and are not customized.
+ERROR401MESSAGES = {
+    'without_token': {
+        "detail": "Authentication credentials were not provided."
+    },
+
+    'wrong_token_header': {
+        "detail": "Authorization header must contain two space-delimited values",
+        "code": "bad_authorization_header"
+    },
+
+    'token_invalid_or_expired': {
+        "detail": "Given token not valid for any token type",
+        "code": "token_not_valid",
+        "messages": [
+            {
+                "token_class": "AccessToken",
+                "token_type": "access",
+                "message": "Token is invalid or expired"
+            }
+        ]
+    },
+
+    'token_blacklisted': {
+        "detail": "Token is blacklisted",
+        "code": "token_not_valid"
+    },
+
+}
+
+
 #               429 Too Many Requests
 # 429 Error serializer
 class Error429ResponseSerializer(serializers.Serializer):

@@ -13,6 +13,9 @@ qrcode>=8.0,<8.1
 # Cache backend
 django-redis>=5.4.0,<5.5
 
+# Celery
+celery>=5.4.0,<5.5
+
 # Lint, optional
 flake8>=7.1.1,<7.2
 pylint-django>=2.5.5,<2.6

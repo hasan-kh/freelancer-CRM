@@ -16,10 +16,14 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 
 from drf_spectacular.utils import extend_schema, OpenApiExample, extend_schema_view, OpenApiResponse, inline_serializer
 
-from utils.error_handling import Error400ResponseSerializer, Error429ResponseSerializer
+from utils.error_handling import (
+    Error400ResponseSerializer,
+    Error401ResponseSerializer, ERROR401MESSAGES,
+    Error429ResponseSerializer
+)
 from utils.tasks import (
-    task_change_password_mail,
-    task_password_reset_request_mail,
+    send_change_password_mail,
+    send_password_reset_request_mail,
 )
 from utils.custom_logging import user_action_logger
 from utils.functions import get_ip_from_request
@@ -45,7 +49,26 @@ GenericOpenApiResponse400 = OpenApiResponse(
 )
 
 GenericOpenApiResponse401 = OpenApiResponse(
-    description='Not authorized: invalid or expired token or not including authorization header.',
+    description='Not authorized: invalid, expired or black listed token or invalid authorization header.',
+    response=Error401ResponseSerializer,
+    examples=[
+        OpenApiExample(
+            name="Without Token",
+            value=ERROR401MESSAGES['without_token'],
+        ),
+        OpenApiExample(
+            name="Wrong Token Header",
+            value=ERROR401MESSAGES['wrong_token_header'],
+        ),
+        OpenApiExample(
+            name="Token Invalid or Expired",
+            value=ERROR401MESSAGES['token_invalid_or_expired'],
+        ),
+        OpenApiExample(
+            name="Token Blacklisted",
+            value=ERROR401MESSAGES['token_blacklisted'],
+        ),
+    ]
 )
 
 GenericOpenApiResponse429 = OpenApiResponse(
@@ -221,6 +244,7 @@ class ChangePasswordView(GenericAPIView):
                 ]
             ),
             400: GenericOpenApiResponse400,
+            401: GenericOpenApiResponse401,
             429: GenericOpenApiResponse429,
         },
         examples=[
@@ -250,7 +274,7 @@ class ChangePasswordView(GenericAPIView):
         user_action_logger.info('Password changed.', extra={'user_id': user.id,
                                                             'client_ip': get_ip_from_request(request)})
         # Inform user via email
-        task_change_password_mail(user_email=user.email)
+        send_change_password_mail(user_email=user.email)
 
         return Response(
             {'detail': _('Password has been changed successfully.')},
@@ -308,8 +332,7 @@ class PasswordResetRequestView(GenericAPIView):
         user = get_user_model().objects.get(email=user_email)
         prc = PasswordResetCode.objects.create(user=user)
         # Send password reset code to users email
-        task_password_reset_request_mail(user_email=user_email,
-                                         password_reset_code=prc.code)
+        send_password_reset_request_mail(user_email=user_email, password_reset_code=prc.code)
 
         # Log user action
         user_action_logger.info(f'Password reset request ({user_email}).',

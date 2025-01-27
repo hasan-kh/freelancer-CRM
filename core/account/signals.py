@@ -15,6 +15,8 @@ def create_email_otp_device_for_staff(sender, instance, **kwargs):  # pylint: di
     email OTP device is created so staff user enter admin panel via token that was sent via email,
     then she can add TOTP device for herself.
     """
+    # Check if the user is staff
     if instance.is_staff:
         programmer_logger.debug(f'User model post save signal: user created or updated as staff({instance})')
-        task_create_otp_email_device_for_staff(user=instance)
+        # Trigger the asynchronous task to create an OTP Email device for user
+        task_create_otp_email_device_for_staff.delay(instance.id)

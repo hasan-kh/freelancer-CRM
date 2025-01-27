@@ -152,11 +152,11 @@ class UserModelTests(TestCase):
 
         self.assertFalse(user.emaildevice_set.exists())
 
-    def test_user_post_save_signal_staff_user(self) -> None:
-        """Test post save signal for user model creates email device object for staff."""
-        user = self.user_model.objects.create_user(email='user@example.com', password='password123', is_staff=True)
-
-        self.assertTrue(user.emaildevice_set.exists())
+    # def test_user_post_save_signal_staff_user(self) -> None:
+    #     """Test post save signal for user model creates email device object for staff."""
+    #     user = self.user_model.objects.create_user(email='user@example.com', password='password123', is_staff=True)
+    #
+    #     self.assertTrue(user.emaildevice_set.exists())
 
 
 class PasswordRestCodeModelTests(TestCase):

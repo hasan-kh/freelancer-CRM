@@ -236,7 +236,7 @@ REST_FRAMEWORK = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('REDIS_LOCATION', 'redis://127.0.0.1:6379/1'),  # Replace with your Redis server address and database
+        'LOCATION': os.environ.get('CACHE_REDIS_LOCATION', 'redis://127.0.0.1:6379/0'),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         },
@@ -248,6 +248,12 @@ _redis_key_prefix = os.environ.get('REDIS_KEY_PREFIX', None)
 if _redis_key_prefix:
     CACHES['default']['KEY_PREFIX'] = _redis_key_prefix.lower().replace(' ', '')
 
+# Celery
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://127.0.0.1:6379/1')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://127.0.0.1:6379/1')
+
+
+# Spectacular
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Project CRM',
     'DESCRIPTION': 'Small customer relationship management for freelancers.',

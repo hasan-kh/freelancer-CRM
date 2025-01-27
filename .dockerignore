@@ -20,8 +20,6 @@ venv/
 # Ignore local environment files
 .env
 .env.*
-!.env.tpl
-!.env.db.tpl
 
 # Ignore IDE/editor specific files
 .vscode/

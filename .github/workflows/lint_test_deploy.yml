@@ -1,4 +1,4 @@
-name: test  # and deploy to VPS
+name: Lint and test  # and deploy to VPS
 
 on:
   push:
@@ -21,14 +21,21 @@ jobs:
         run: |
           cp ./envs/.env.tpl ./envs/.env 
           cp ./envs/.env.db.tpl ./envs/.env.db
+          cp ./envs/.env.rabbitmq.tpl ./envs/.env.rabbitmq
+          cp ./envs/.env.flower.tpl ./envs/.env.flower
+
       - name: Build docker images
         run: docker compose -f docker-compose.yml build
 
-#      - name: Lint
-#        run: docker compose run --rm app sh -c "flake8 --ignore=E501 /core && pylint /core"
+      - name: Lint
+        run: docker compose run --rm app sh -c "cd /app && sh ./scripts/lint.sh"
 
       - name: Test
-        run: docker compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
+        run: docker compose run --rm app sh -c "sh /app/scripts/wait_for_rabbitmq.sh &&
+                                                sh /app/scripts/wait_for_redis.sh &&
+                                                cd core &&
+                                                python manage.py wait_for_db &&
+                                                python manage.py test"
 
 #      - name: Deploy to VPS using SSH
 #        uses: appleboy/ssh-action@v1.1.0

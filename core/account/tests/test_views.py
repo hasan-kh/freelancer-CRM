@@ -185,11 +185,12 @@ class PublicAccountViewsTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    @patch('account.views.task_password_reset_request_mail', return_value=None)
+    @patch('account.views.send_password_reset_request_mail')
     def test_reset_password_request_succeeds(self, mocked_send_mail) -> None:
         """Test reset password request succeeds."""
         user = create_user()
         payload = {'email': user.email}
+        mocked_send_mail.return_value = {'user_email': user.email}
         with self.assertLogs('user_action', 'INFO') as log:
             res = self.client.post(USER_RESET_PASSWORD_REQ_URL, payload)
 
@@ -205,7 +206,7 @@ class PublicAccountViewsTests(TestCase):
         # Assert log
         self.assertEqual(f'Password reset request ({user.email}).', log.records[0].message)
 
-    @patch('account.views.task_password_reset_request_mail', return_value=None)
+    @patch('account.views.send_password_reset_request_mail')
     def test_password_reset_request_not_existing_email_fails(self, mocked_send_mail) -> None:
         """Test password reset request not existing email fails."""
         payload = {'email': 'not_existing@example.com'}
@@ -224,13 +225,14 @@ class PublicAccountViewsTests(TestCase):
         self.assertEqual(f'Password reset fails, account with email({payload["email"]}) not found.',
                          log.records[0].message)
 
-    @patch('account.views.task_password_reset_request_mail', return_value=None)
+    @patch('account.views.send_password_reset_request_mail')
     def test_password_reset_request_not_active_account_fails(self, mocked_send_mail) -> None:
         """Test password reset request for not active account fails."""
         user = create_user(is_active=False)
         payload = {
             'email': user.email
         }
+
         with self.assertLogs('user_action', 'WARNING') as log:
             res = self.client.post(USER_RESET_PASSWORD_REQ_URL, payload)
 
@@ -558,7 +560,7 @@ class PrivateAccountViewsTests(TestCase):
         # Clear throttle cache after each test
         cache.clear()
 
-    @patch('account.views.task_change_password_mail', return_value=1)
+    @patch('account.views.send_change_password_mail')
     def test_user_change_password_successfully(self, mocked_send_mail) -> None:
         """Test user changes password successfully."""
         payload = {
@@ -566,6 +568,7 @@ class PrivateAccountViewsTests(TestCase):
             'new_password1': 'new_password',
             'new_password2': 'new_password',
         }
+        mocked_send_mail.return_value = {'user_email': self.user.email}
         with self.assertLogs('user_action', level='INFO') as log:
             res = self.client.post(USER_CHANGE_PASSWORD_URL, payload)
 
