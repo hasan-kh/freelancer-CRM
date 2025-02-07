@@ -24,7 +24,7 @@ build:
       - envs/.env.db
       - envs/.env.rabbitmq
       - envs/.env.flower
-    expires_in: 1 hour
+    expire_in: 1 hour
 
 lint:
   stage: lint
