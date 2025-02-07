@@ -1,0 +1,82 @@
+stages:
+  - build
+  - lint
+  - test
+  - push
+  - new_release
+  - deploy
+
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+build:
+  stage: build
+  only:
+    - main
+    - dev
+    - merge_requests
+  script:
+    - make build-ci
+
+lint:
+  stage: lint
+  only:
+    - main
+    - dev
+    - merge_requests
+  script:
+    - docker compose run --rm app sh -c "cd /app && sh ./scripts/lint.sh"
+
+test:
+  stage: test
+  only:
+    - main
+    - dev
+    - merge_requests
+  script:
+    - docker compose run --rm app sh -c "sh /app/scripts/wait_for_rabbitmq.sh &&
+                                         sh /app/scripts/wait_for_redis.sh &&
+                                         cd core &&
+                                         python manage.py wait_for_db &&
+                                         python manage.py test"
+
+push:
+  stage: push
+  only:
+    - main
+    - dev
+  script:
+    - make push
+
+new_release:
+  stage: new_release
+  rules:
+    - if: "$CI_COMMIT_TAG"
+      when: always
+  release:
+    tag_name: "$CI_COMMIT_TAG"
+    description: "Release for $CI_COMMIT_TAG"
+
+deploy dev:
+  stage: deploy
+  only:
+    - main
+    - dev
+  environment:
+    name: dev
+  tags:
+    - dev
+  script:
+    - make deploy
+
+deploy prod:
+  stage: deploy
+  only:
+    - main
+  when: manual
+  environment:
+    name: prod
+  tags:
+    - prod
+  script:
+    - make deploy

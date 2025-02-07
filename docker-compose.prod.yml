@@ -1,0 +1,27 @@
+services:
+  app:
+    image: "${CI_REGISTRY_IMAGE}/app:${CI_COMMIT_REF_NAME}"
+    ports:
+      - "8003:8000"
+    volumes:
+      - fc-prod-static-data:/vol/web
+
+  db:
+    volumes:
+      - fc-prod-db-data:/var/lib/postgresql/data
+
+  celery:
+    image: "${CI_REGISTRY_IMAGE}/app:${CI_COMMIT_REF_NAME}"
+    volumes:
+      - fc-prod-static-data:/vol/web
+#    deploy:
+#      replicas: 4
+
+  flower:
+    image: "${CI_REGISTRY_IMAGE}/flower:${CI_COMMIT_REF_NAME}"
+    ports:
+      - "5553:5555"
+
+volumes:
+  fc-prod-static-data:
+  fc-prod-db-data:

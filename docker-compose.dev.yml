@@ -1,0 +1,26 @@
+services:
+  app:
+    image: "${CI_REGISTRY_IMAGE}/app:${CI_COMMIT_REF_NAME}"
+    ports:
+      - "8002:8000"
+    volumes:
+      - fc-dev-static-data:/vol/web
+
+  db:
+    volumes:
+      - fc-dev-db-data:/var/lib/postgresql/data
+
+  celery:
+    image: "${CI_REGISTRY_IMAGE}/app:${CI_COMMIT_REF_NAME}"
+    volumes:
+      - fc-dev-static-data:/vol/web
+
+  flower:
+    image: "${CI_REGISTRY_IMAGE}/flower:${CI_COMMIT_REF_NAME}"
+    ports:
+      - "5552:5555"
+
+
+volumes:
+  fc-dev-static-data:
+  fc-dev-db-data:

@@ -2,12 +2,6 @@ services:
   app:
     build:
       context: .
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./core:/app/core
-      - ./scripts:/app/scripts
-      - dev-static-data:/vol/web
     command: >
       sh -c "sh ./scripts/wait_for_rabbitmq.sh &&
              sh ./scripts/wait_for_redis.sh &&
@@ -26,32 +20,20 @@ services:
 
   db:
     image: postgres:16-alpine
-    volumes:
-      - dev-db-data:/var/lib/postgresql/data
     env_file:
       - ./envs/.env.db
 
   redis:
     image: redis:7.2.0-alpine
-    ports:
-      - "6379:6379"
 
   rabbitmq:
     image: rabbitmq:3.11-management
-    ports:
-      - "5672:5672"   # main service port (AMQP)
-      - "15672:15672" # management console port
     env_file:
       - ./envs/.env.rabbitmq
 
   celery:
     build:
       context: .
-#    deploy:
-#      replicas: 4
-    volumes:
-      - ./core:/app/core
-      - dev-static-data:/vol/web
     command: >
       sh -c "sh ./scripts/wait_for_rabbitmq.sh &&
              sh ./scripts/wait_for_redis.sh &&
@@ -68,16 +50,9 @@ services:
     build:
       context: .
       dockerfile: ./flower/Dockerfile
-    ports:
-      - "5555:5555"
     env_file:
       - ./envs/.env.flower
     depends_on:
       - celery
       - rabbitmq
       - redis
-
-
-volumes:
-  dev-db-data:
-  dev-static-data:
