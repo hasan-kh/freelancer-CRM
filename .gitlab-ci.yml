@@ -8,7 +8,7 @@ stages:
   - deploy
 
 before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - make login_registry
 
 build:
   stage: build
@@ -18,6 +18,13 @@ build:
     - merge_requests
   script:
     - make build-ci
+  artifacts:
+    paths:
+      - envs/.env
+      - envs/.env.db
+      - envs/.env.rabbitmq
+      - envs/.env.flower
+    expires_in: 1 hour
 
 lint:
   stage: lint
@@ -34,12 +41,10 @@ test:
     - main
     - dev
     - merge_requests
+  dependencies:
+    - build
   script:
-    - docker compose run --rm app sh -c "sh /app/scripts/wait_for_rabbitmq.sh &&
-                                         sh /app/scripts/wait_for_redis.sh &&
-                                         cd core &&
-                                         python manage.py wait_for_db &&
-                                         python manage.py test"
+    - make test-ci
 
 push:
   stage: push
@@ -69,6 +74,8 @@ deploy dev:
     name: dev
   tags:
     - dev
+  dependencies:
+    - build
   script:
     - make deploy
 
@@ -81,5 +88,7 @@ deploy prod:
     name: prod
   tags:
     - prod
+  dependencies:
+    - build
   script:
     - make deploy
