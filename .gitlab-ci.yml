@@ -1,3 +1,4 @@
+# gitlab runner, needs to have docker, docker compose and make installed
 stages:
   - build
   - lint
@@ -25,7 +26,7 @@ lint:
     - dev
     - merge_requests
   script:
-    - docker compose run --rm app sh -c "cd /app && sh ./scripts/lint.sh"
+    - make lint-ci
 
 test:
   stage: test

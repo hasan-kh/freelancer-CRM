@@ -25,6 +25,10 @@ build-ci:
 	docker build -t ${REGISTRY}/app:${TAG} .
 	docker build -t ${REGISTRY}/flower:${TAG} -f flower/Dockerfile .
 
+# Lint
+lint-ci:
+	docker run --rm ${REGISTRY}/app:${TAG} sh -c "cd /app && sh ./scripts/lint.sh"
+
 # Push images registry
 push:
 	docker push ${REGISTRY}/app:${TAG}
