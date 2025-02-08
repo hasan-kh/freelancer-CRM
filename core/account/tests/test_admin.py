@@ -29,7 +29,8 @@ class UserAdminTests(TestCase):
         """Test user admin change_list page loads successfully."""
         url = reverse('admin:account_user_changelist')
         res = self.client.get(url)
-
+        print('client session: ', self.client.session)
+        print(res.status_code, res.url)  # Debugging output
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, self.user.email)
         self.assertContains(res, self.user.first_name)
@@ -47,5 +48,7 @@ class UserAdminTests(TestCase):
         for query, expected in search_queries:
             with self.subTest(query=query):
                 res = self.client.get(url, {'q': query})
+                print('client session: ', self.client.session)
+                print(res.status_code, res.url)  # Debugging output
                 self.assertEqual(res.status_code, 200)
                 self.assertContains(res, expected)
