@@ -40,25 +40,26 @@ debug:
 login_registry:
 	docker login -u $(CI_REGISTRY_USER) -p $(CI_REGISTRY_PASSWORD) $(CI_REGISTRY)
 
+# Create env files from templates if not already present
+create-env-files:
+	@test -f ./envs/.env || cp ./envs/.env.tpl ./envs/.env
+	@test -f ./envs/.env.db || cp ./envs/.env.db.tpl ./envs/.env.db
+	@test -f ./envs/.env.rabbitmq || cp ./envs/.env.rabbitmq.tpl ./envs/.env.rabbitmq
+	@test -f ./envs/.env.flower || cp ./envs/.env.flower.tpl ./envs/.env.flower
+
 # Build the app image for local use
 build-local:
 	docker build -t $(LOCAL_APP_IMAGE_NAME):latest .
 
 # Build for CI/CD
 build-ci:
-	# Create env files from templates
-	cp ./envs/.env.tpl ./envs/.env
-	cp ./envs/.env.db.tpl ./envs/.env.db
-	cp ./envs/.env.rabbitmq.tpl ./envs/.env.rabbitmq
-	cp ./envs/.env.flower.tpl ./envs/.env.flower
-
     # Build docker images, i use same image for app and celery services
 	docker build -t $(REGISTRY)/app:$(TAG) .
 	docker build -t $(REGISTRY)/flower:$(TAG) -f flower/Dockerfile .
 
 # Lint
 lint-ci:
-	$(DOCKER_COMPOSE) run --rm $(REGISTRY)/app:$(TAG) sh -c "cd /app && sh ./scripts/lint.sh"
+	$(DOCKER_COMPOSE) run --rm app sh -c "cd /app && sh ./scripts/lint.sh"
 
 # Test
 test-ci:

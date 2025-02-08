@@ -17,14 +17,8 @@ build:
     - dev
     - merge_requests
   script:
+    - make create-env-files
     - make build-ci
-  artifacts:
-    paths:
-      - envs/.env
-      - envs/.env.db
-      - envs/.env.rabbitmq
-      - envs/.env.flower
-    expire_in: 1 hour
 
 lint:
   stage: lint
@@ -33,6 +27,7 @@ lint:
     - dev
     - merge_requests
   script:
+    - make create-env-files
     - make lint-ci
 
 test:
@@ -41,9 +36,8 @@ test:
     - main
     - dev
     - merge_requests
-  dependencies:
-    - build
   script:
+    - make create-env-files
     - make test-ci
 
 push:
@@ -74,8 +68,6 @@ deploy dev:
     name: dev
   tags:
     - dev
-  dependencies:
-    - build
   script:
     - make deploy
 
@@ -88,7 +80,5 @@ deploy prod:
     name: prod
   tags:
     - prod
-  dependencies:
-    - build
   script:
     - make deploy
