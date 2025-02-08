@@ -28,7 +28,7 @@ ADMIN_INDEX_TITLE=Administration
 ADMIN_SITE_TITLE='Django Admin'
 
 # Activate OTP(One Time Password) for staff log in to admin, 1 for active, 0 for inactive
-OTP_STAFF_ACTIVE=1
+OTP_STAFF_ACTIVE=0
 # The maximum number of seconds a token is valid.
 OTP_EMAIL_TOKEN_VALIDITY=300
 OTP_TOTP_ISSUER=website_name
