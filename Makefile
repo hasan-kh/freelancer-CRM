@@ -24,7 +24,7 @@ else ifeq ($(ENV),dev)
 else ifeq ($(ENV),prod)
   COMPOSE_FILES=-f docker-compose.yml -f docker-compose.prod.yml
 else
-  $(error Invalid ENV value. Use 'local', 'dev', or 'prod'.)
+  $(error Invalid ENV value '$(ENV)'. Use 'local', 'dev', or 'prod'.)
 endif
 
 DOCKER_COMPOSE=docker compose $(COMPOSE_FILES)
