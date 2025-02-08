@@ -35,10 +35,10 @@ OTP_TOTP_ISSUER=website_name
 
 # Redis
 # redis location/URL protocol://IP:PORT/DATABASE
-CACHE_REDIS_LOCATION=redis://127.0.0.1:6379/0
+CACHE_REDIS_LOCATION=redis://redis:6379/0
 # Optional: Prefix for all cache keys, all lower, without white space
 REDIS_KEY_PREFIX=myapp
 
 # Celery
 CELERY_BROKER_URL='amqp://guest:guest@rabbitmq:5672/myvhost'
-CELERY_RESULT_BACKEND=redis://127.0.0.1:6379/1
+CELERY_RESULT_BACKEND=redis://redis:6379/1

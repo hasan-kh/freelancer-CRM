@@ -508,6 +508,9 @@ reports=no
 # Activate the evaluation score.
 score=yes
 
+# Prevent Pylint from trying to write cache files
+persistent=no
+
 
 [SIMILARITIES]
 
