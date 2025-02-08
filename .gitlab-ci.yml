@@ -69,6 +69,7 @@ deploy dev:
   tags:
     - dev
   script:
+    - make debug
     - create-env-files
     - make deploy
 
