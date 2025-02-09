@@ -5,7 +5,6 @@ TAG=$(CI_COMMIT_REF_NAME)
 
 # If CI_ENVIRONMENT_NAME is defined, force ENV to use it.
 ifdef CI_ENVIRONMENT_NAME
-#  ENV := $(strip $(CI_ENVIRONMENT_NAME)) # Set ENV if it's not already set also trim white spaces
   ENV := $(CI_ENVIRONMENT_NAME) # Set ENV if it's not already set also trim white spaces
 else
   # Otherwise, use ENV if provided on the command line;
@@ -17,21 +16,24 @@ endif
 # make debug -> ENV=local
 # make ENV=prod -> ENV=prod
 
+STRIPPED_ENV = $(strip $(ENV))
+
 # Define the appropriate Docker Compose file based on ENV
-ifeq ($(ENV),local)
+ifeq ($(STRIPPED_ENV),local)
   COMPOSE_FILES=-f docker-compose.yml -f docker-compose.override.yml
-else ifeq ($(ENV),dev)
+else ifeq ($(STRIPPED_ENV),dev)
   COMPOSE_FILES=-f docker-compose.yml -f docker-compose.dev.yml
-else ifeq ($(ENV),prod)
+else ifeq ($(STRIPPED_ENV),prod)
   COMPOSE_FILES=-f docker-compose.yml -f docker-compose.prod.yml
 else
-  $(error Invalid ENV value '$(ENV)'. Use 'local', 'dev', or 'prod'.)
+  $(error Invalid ENV value $(STRIPPED_ENV). Use 'local', 'dev', or 'prod'.)
 endif
 
 DOCKER_COMPOSE=docker compose $(COMPOSE_FILES)
 
 debug:
 	@echo "ENV: $(ENV)"
+	@echo "STRIPPED ENV: $(STRIPPED_ENV)"
 	@echo "DOCKER_COMPOSE: $(DOCKER_COMPOSE)"
 	@echo "LOCAL_APP_IMAGE_NAME: $(LOCAL_APP_IMAGE_NAME)"
 	@echo "REGISTRY(CI_REGISTRY_IMAGE): $(CI_REGISTRY_IMAGE)"
