@@ -25,7 +25,7 @@ class RequestFilter(Filter):  # pylint: disable=too-few-public-methods
     def filter(self, record):
         # Assume `record.request` is passed explicitly in logging calls
         request = getattr(record, 'request', None)
-        if request:
+        if request and hasattr(request, 'user'):
             record.user_id = request.user.id if request.user.is_authenticated else "Anonymous"
             record.client_ip = get_ip_from_request(request)
         else:
