@@ -5,7 +5,8 @@ TAG=$(CI_COMMIT_REF_NAME)
 
 # If CI_ENVIRONMENT_NAME is defined, force ENV to use it.
 ifdef CI_ENVIRONMENT_NAME
-  ENV := $(strip $(CI_ENVIRONMENT_NAME)) # Set ENV if it's not already set also trim white spaces
+#  ENV := $(strip $(CI_ENVIRONMENT_NAME)) # Set ENV if it's not already set also trim white spaces
+  ENV := $(CI_ENVIRONMENT_NAME) # Set ENV if it's not already set also trim white spaces
 else
   # Otherwise, use ENV if provided on the command line;
   # if not, default to "local".
