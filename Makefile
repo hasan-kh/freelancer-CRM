@@ -50,6 +50,7 @@ create-env-files:
 	@test -f ./envs/.env.db || cp ./envs/.env.db.tpl ./envs/.env.db
 	@test -f ./envs/.env.rabbitmq || cp ./envs/.env.rabbitmq.tpl ./envs/.env.rabbitmq
 	@test -f ./envs/.env.flower || cp ./envs/.env.flower.tpl ./envs/.env.flower
+	@test -f ./envs/.env.proxy || cp ./envs/.env.proxy.tpl ./envs/.env.proxy
 
 # Build the app image for local use
 build-local:
@@ -60,6 +61,7 @@ build-ci:
     # Build docker images, i use same image for app and celery services
 	docker build -t $(REGISTRY)/app:$(TAG) .
 	docker build -t $(REGISTRY)/flower:$(TAG) -f flower/Dockerfile .
+	docker build -t $(REGISTRY)/proxy:$(TAG) proxy/
 
 # Lint
 lint-ci:
@@ -78,6 +80,7 @@ test-ci:
 push:
 	docker push $(REGISTRY)/app:$(TAG)
 	docker push $(REGISTRY)/flower:$(TAG)
+	docker push $(REGISTRY)/proxy:$(TAG)
 
 # Run services locally
 up:
@@ -119,6 +122,7 @@ prepare-deployment-envs:
 	@test -f $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.db || cp envs/.env.db.tpl $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.db
 	@test -f $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.rabbitmq || cp envs/.env.rabbitmq.tpl $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.rabbitmq
 	@test -f $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.flower || cp envs/.env.flower.tpl $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.flower
+	@test -f $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.proxy || cp envs/.env.proxy.tpl $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.proxy
 
 
 deploy:

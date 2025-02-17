@@ -1,27 +1,40 @@
 services:
   app:
     image: "${CI_REGISTRY_IMAGE}/app:${CI_COMMIT_REF_NAME}"
-    ports:
-      - "8003:8000"
+#    ports:
+#      - "8003:8000"
     volumes:
-      - fc-prod-static-data:/vol/web
+      - prod-static-data:/vol/web
 
   db:
     volumes:
-      - fc-prod-db-data:/var/lib/postgresql/data
+      - prod-db-data:/var/lib/postgresql/data
 
   celery:
     image: "${CI_REGISTRY_IMAGE}/app:${CI_COMMIT_REF_NAME}"
     volumes:
-      - fc-prod-static-data:/vol/web
+      - prod-static-data:/vol/web
 #    deploy:
 #      replicas: 4
 
   flower:
     image: "${CI_REGISTRY_IMAGE}/flower:${CI_COMMIT_REF_NAME}"
     ports:
-      - "5553:5555"
+      - "5555:5555"
+
+  proxy:
+    image: "${CI_REGISTRY_IMAGE}/proxy:${CI_COMMIT_REF_NAME}"
+    build:
+      context: ./proxy
+    depends_on:
+      - app
+    ports:
+      - 80:8000
+    env_file:
+      - ./envs/.env.proxy
+    volumes:
+      - prod-static-data:/vol/static
 
 volumes:
-  fc-prod-static-data:
-  fc-prod-db-data:
+  prod-static-data:
+  prod-db-data:
