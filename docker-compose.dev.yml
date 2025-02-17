@@ -1,8 +1,14 @@
 services:
   app:
     image: "${CI_REGISTRY_IMAGE}/app:${CI_COMMIT_REF_NAME}"
-#    ports:
-#      - "8000:8000"
+    command: >
+      sh -c "sh ./scripts/wait_for_rabbitmq.sh &&
+             sh ./scripts/wait_for_redis.sh &&
+             cd core &&
+             python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             uwsgi --socket :8000 --workers 4 --master --enable-threads --module core.wsgi"
     volumes:
       - dev-static-data:/vol/web
 

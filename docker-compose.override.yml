@@ -3,6 +3,14 @@ services:
     image: app:latest  # Local image
     ports:
       - "8000:8000"
+    command: >
+      sh -c "sh ./scripts/wait_for_rabbitmq.sh &&
+             sh ./scripts/wait_for_redis.sh &&
+             cd core &&
+             python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./core:/app/core
       - ./scripts:/app/scripts
