@@ -3,6 +3,7 @@ LOCAL_APP_IMAGE_NAME=my-app
 REGISTRY=$(CI_REGISTRY_IMAGE)
 TAG=$(CI_COMMIT_REF_NAME)
 DEPLOY_DIR_BASE=/home/hasan/projects/FreelancerCRM
+
 # If CI_ENVIRONMENT_NAME is defined, force ENV to use it.
 ifdef CI_ENVIRONMENT_NAME
   ENV := $(CI_ENVIRONMENT_NAME) # Set ENV if it's not already set also trim white spaces
@@ -62,7 +63,7 @@ build-ci:
 
 # Lint
 lint-ci:
-	$(DOCKER_COMPOSE) run --rm app sh -c "cd /app && sh ./scripts/lint.sh"
+	$(DOCKER_COMPOSE) run --rm --no-deps app sh -c "cd /app && sh ./scripts/lint.sh"
 
 # Test
 test-ci:
@@ -90,7 +91,7 @@ pull:
 	$(DOCKER_COMPOSE) pull
 
 cleanup:
-	$(DOCKER_COMPOSE) down -v --remove-orphans
+	$(DOCKER_COMPOSE) down --remove-orphans
 
 prepare-deployment-files:
 	# Create deployment directory if needed
@@ -121,6 +122,7 @@ prepare-deployment-envs:
 
 deploy:
 	@echo "Deploying to $(STRIPPED_ENV) station..."
+	$(MAKE) cleanup
 	$(MAKE) prepare-deployment-files
 	$(MAKE) prepare-deployment-envs
 
