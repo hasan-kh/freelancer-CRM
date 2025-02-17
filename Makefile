@@ -2,7 +2,7 @@
 LOCAL_APP_IMAGE_NAME=my-app
 REGISTRY=$(CI_REGISTRY_IMAGE)
 TAG=$(CI_COMMIT_REF_NAME)
-DEPLOY_DIR_BASE=/home/hasan/projects/FreelancerCRM/
+DEPLOY_DIR_BASE=/home/hasan/projects/FreelancerCRM
 # If CI_ENVIRONMENT_NAME is defined, force ENV to use it.
 ifdef CI_ENVIRONMENT_NAME
   ENV := $(CI_ENVIRONMENT_NAME) # Set ENV if it's not already set also trim white spaces
@@ -100,11 +100,11 @@ prepare-deployment-files:
 	# Copy docker compose files
 	cp docker-compose.yml $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/
 
-	ifeq ($(STRIPPED_ENV),dev)
-		cp docker-compose.dev.yml $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/
-	else ifeq($(STRIPPED_ENV),prod)
-		cp docker-compose.prod.yml $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/
-	endif
+ifeq ($(STRIPPED_ENV),dev)
+	cp docker-compose.dev.yml $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/
+else ifeq($(STRIPPED_ENV),prod)
+	cp docker-compose.prod.yml $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/
+endif
 
 prepare-deployment-envs:
 	@echo "Preparing environment files for $(STRIPPED_ENV)..."
