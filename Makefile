@@ -72,6 +72,7 @@ test-ci:
 									   	  cd core && \
 									      python manage.py wait_for_db && \
 									      python manage.py test"
+	$(DOCKER_COMPOSE) down --remove-orphans
 
 # Push images registry
 push:
@@ -122,7 +123,6 @@ prepare-deployment-envs:
 
 deploy:
 	@echo "Deploying to $(STRIPPED_ENV) station..."
-	$(MAKE) cleanup
 	$(MAKE) prepare-deployment-files
 	$(MAKE) prepare-deployment-envs
 
