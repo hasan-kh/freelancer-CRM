@@ -70,7 +70,6 @@ deploy dev:
     - dev
   script:
     - make debug
-    - make create-env-files
     - make deploy
 
 deploy prod:
@@ -83,5 +82,5 @@ deploy prod:
   tags:
     - prod
   script:
-    - make create-env-files
+    - make debug
     - make deploy

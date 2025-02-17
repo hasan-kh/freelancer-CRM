@@ -2,7 +2,7 @@
 LOCAL_APP_IMAGE_NAME=my-app
 REGISTRY=$(CI_REGISTRY_IMAGE)
 TAG=$(CI_COMMIT_REF_NAME)
-
+DEPLOY_DIR_BASE=/home/hasan/projects/FreelancerCRM/
 # If CI_ENVIRONMENT_NAME is defined, force ENV to use it.
 ifdef CI_ENVIRONMENT_NAME
   ENV := $(CI_ENVIRONMENT_NAME) # Set ENV if it's not already set also trim white spaces
@@ -89,7 +89,42 @@ down:
 pull:
 	$(DOCKER_COMPOSE) pull
 
+cleanup:
+	$(DOCKER_COMPOSE) down -v --remove-orphans
+
+prepare-deployment-files:
+	# Create deployment directory if needed
+	@echo "Preparing deployment directory for $(STRIPPED_ENV)..."
+	mkdir -p $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)
+
+	# Copy docker compose files
+	cp docker-compose.yml $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/
+
+	ifeq ($(STRIPPED_ENV),dev)
+		cp docker-compose.dev.yml $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/
+	else ifeq($(STRIPPED_ENV),prod)
+		cp docker-compose.prod.yml $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/
+	endif
+
+prepare-deployment-envs:
+	@echo "Preparing environment files for $(STRIPPED_ENV)..."
+
+	# Create a persistent env directory
+	mkdir -p $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs
+
+	# Copy the template files only if the final file does not exist already.
+	@test -f $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env || cp envs/.env.tpl $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env
+	@test -f $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.db || cp envs/.env.db.tpl $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.db
+	@test -f $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.rabbitmq || cp envs/.env.rabbitmq.tpl $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.rabbitmq
+	@test -f $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.flower || cp envs/.env.flower.tpl $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/envs/.env.flower
+
+
 deploy:
-	$(DOCKER_COMPOSE) pull
-	$(DOCKER_COMPOSE) down --remove-orphans
-	$(DOCKER_COMPOSE) up -d
+	@echo "Deploying to $(STRIPPED_ENV) station..."
+	$(MAKE) prepare-deployment-files
+	$(MAKE) prepare-deployment-envs
+
+	cd $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV) && \
+		$(DOCKER_COMPOSE) pull; \
+		$(DOCKER_COMPOSE) down --remove-orphans; \
+		$(DOCKER_COMPOSE) up -d
