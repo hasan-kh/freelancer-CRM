@@ -36,7 +36,7 @@ class UserModelTests(TestCase):
         # Check default fields
         self.assertEqual(user.first_name, '')
         self.assertEqual(user.last_name, '')
-        self.assertEqual(user.cellphone, '')
+        self.assertEqual(user.cellphone, None)
         self.assertEqual(user.full_name.strip(), '')
 
     def test_create_user_define_default_fields(self) -> None:

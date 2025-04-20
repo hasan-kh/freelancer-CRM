@@ -1,5 +1,5 @@
 # Variables
-LOCAL_APP_IMAGE_NAME=my-app
+LOCAL_APP_IMAGE_NAME=projectcrm
 REGISTRY=$(CI_REGISTRY_IMAGE)
 TAG=$(CI_COMMIT_REF_NAME)
 DEPLOY_DIR_BASE=/home/hasan/projects/FreelancerCRM
@@ -107,7 +107,7 @@ prepare-deployment-files:
 
 ifeq ($(STRIPPED_ENV),dev)
 	cp docker-compose.dev.yml $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/
-else ifeq($(STRIPPED_ENV),prod)
+else ifeq ($(STRIPPED_ENV),prod)
 	cp docker-compose.prod.yml $(DEPLOY_DIR_BASE)/$(STRIPPED_ENV)/
 endif
 

@@ -16,11 +16,6 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 
 from drf_spectacular.utils import extend_schema, OpenApiExample, extend_schema_view, OpenApiResponse, inline_serializer
 
-from utils.error_handling import (
-    Error400ResponseSerializer,
-    Error401ResponseSerializer, ERROR401MESSAGES,
-    Error429ResponseSerializer
-)
 from utils.tasks import (
     send_change_password_mail,
     send_password_reset_request_mail,
@@ -28,6 +23,11 @@ from utils.tasks import (
 from utils.custom_logging import user_action_logger
 from utils.functions import get_ip_from_request
 from utils import throttling as my_throttling
+from utils.open_api_generics import (
+    GenericOpenApiResponse400,
+    GenericOpenApiResponse401,
+    GenericOpenApiResponse429,
+)
 
 from account.models import PasswordResetCode
 from account.serializers import (
@@ -36,44 +36,8 @@ from account.serializers import (
     ChangePasswordSerializer,
     PasswordResetRequestSerializer,
     PasswordResetSerializer,
-    RegisterSerializer,
+    RegisterUserSerializer,
     ManageUserSerializer,
-)
-
-
-GenericOpenApiResponse400 = OpenApiResponse(
-    description='Validation error occurred.Errors contain keys for '
-    '`field name` (which means validation error raised for a certain field) or '
-    '`non_field_errors` for errors that are not tied to a single field.',
-    response=Error400ResponseSerializer,
-)
-
-GenericOpenApiResponse401 = OpenApiResponse(
-    description='Not authorized: invalid, expired or black listed token or invalid authorization header.',
-    response=Error401ResponseSerializer,
-    examples=[
-        OpenApiExample(
-            name="Without Token",
-            value=ERROR401MESSAGES['without_token'],
-        ),
-        OpenApiExample(
-            name="Wrong Token Header",
-            value=ERROR401MESSAGES['wrong_token_header'],
-        ),
-        OpenApiExample(
-            name="Token Invalid or Expired",
-            value=ERROR401MESSAGES['token_invalid_or_expired'],
-        ),
-        OpenApiExample(
-            name="Token Blacklisted",
-            value=ERROR401MESSAGES['token_blacklisted'],
-        ),
-    ]
-)
-
-GenericOpenApiResponse429 = OpenApiResponse(
-    description='Too many requests',
-    response=Error429ResponseSerializer,
 )
 
 
@@ -410,10 +374,10 @@ class PasswordResetView(GenericAPIView):
             status=status.HTTP_200_OK)
 
 
-class RegisterView(CreateAPIView):
+class RegisterUserView(CreateAPIView):
     """Create a new user account."""
     permission_classes = [AllowAny]
-    serializer_class = RegisterSerializer
+    serializer_class = RegisterUserSerializer
     throttle_classes = [my_throttling.AnonMin3Throttle,
                         my_throttling.AnonHour10Throttle]
 
@@ -421,11 +385,11 @@ class RegisterView(CreateAPIView):
         summary='Create a new user account.',
         description='Create a new user account.',
         tags=['Account'],
-        request=RegisterSerializer,
+        request=RegisterUserSerializer,
         responses={
             201: OpenApiResponse(
                 description='Account created successfully.',
-                response=RegisterSerializer,
+                response=RegisterUserSerializer,
                 examples=[
                     OpenApiExample(
                         name='Success',

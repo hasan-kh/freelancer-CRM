@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+
     'rest_framework',
     'drf_spectacular',
     'rest_framework_simplejwt',
@@ -56,7 +57,9 @@ INSTALLED_APPS = [
     'django_otp',
     'django_otp.plugins.otp_totp',
     'django_otp.plugins.otp_email',
+    'django_celery_beat',
     'django_extensions',
+
     'account.apps.AccountConfig',
 ]
 
@@ -172,6 +175,8 @@ SITE_ID = 1
 
 AUTH_USER_MODEL = 'account.User'
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100
+
 PASSWORD_RESET_CODE_LENGTH = int(os.environ.get('PASSWORD_RESET_CODE_LENGTH', 6))
 PASSWORD_RESET_CODE_EXPIRE_MINUTES = int(os.environ.get(
     'PASSWORD_RESET_CODE_EXPIRE_MINUTES',
@@ -255,7 +260,7 @@ CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://127.0.0
 
 # Spectacular
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Project CRM',
+    'TITLE': ADMIN_SITE_TITLE,
     'DESCRIPTION': 'Small customer relationship management for freelancers.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,

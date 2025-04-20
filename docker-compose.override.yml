@@ -1,6 +1,6 @@
 services:
   app:
-    image: app:latest  # Local image
+    image: projectcrmapp:latest  # Local image
     ports:
       - "8000:8000"
     command: >
@@ -30,10 +30,14 @@ services:
       - "15672:15672" # management console port
 
   celery:
-    image: app:latest  # Local image
+    image: projectcrmapp:latest  # Local image
     volumes:
       - ./core:/app/core
-      - fc-dev-static-data:/vol/web
+
+  celery_beat:
+    image: projectcrmapp:latest  # Local image
+    volumes:
+      - ./core:/app/core
 
   flower:
     ports:

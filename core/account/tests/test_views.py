@@ -19,7 +19,7 @@ from utils.error_handling import (
     MyErrors
 )
 from account.models import PasswordResetCode, generate_random_code
-from account.serializers import RegisterSerializer, ManageUserSerializer
+from account.serializers import RegisterUserSerializer, ManageUserSerializer
 
 
 USER_LOGIN_URL = reverse('account:token_obtain_pair')
@@ -423,7 +423,7 @@ class PublicAccountViewsTests(TestCase):
         # Get user from database and check data with related serializer
         user = get_user_model().objects.get(email=payload['email'])
 
-        serializer = RegisterSerializer(instance=user)
+        serializer = RegisterUserSerializer(instance=user)
         self.assertDictEqual(serializer.data, res.data)
 
         # Check password

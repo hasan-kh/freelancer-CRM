@@ -4,6 +4,9 @@ sh ./scripts/wait_for_rabbitmq.sh
 # Wait for redis service
 sh ./scripts/wait_for_redis.sh
 
+echo Sleep for 15 seconds until rabbitmq server loads completely
+sleep 15
+
 # create a celeryconfig.py file where i run celery flower command to set timezone for flower UI
 # we use CELERY_TIMEZONE environment variable to set timezone
 echo "Create celeryconfig.py in /app to set timezone using CELERY_TIMEZONE environment variable, flower UI uses this config file."

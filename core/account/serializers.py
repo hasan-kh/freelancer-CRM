@@ -277,7 +277,7 @@ class PasswordResetSerializer(serializers.Serializer):
         return attrs
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class RegisterUserSerializer(serializers.ModelSerializer):
     """User register serializer."""
     password_repeat = serializers.CharField(write_only=True,
                                             trim_whitespace=False,

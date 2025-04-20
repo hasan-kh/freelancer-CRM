@@ -1,7 +1,6 @@
 """Celery configuration."""
 import os
 from celery import Celery, Task
-from celery.schedules import crontab
 from kombu import Queue, Exchange
 from django.conf import settings
 
@@ -35,6 +34,7 @@ app.conf.update(
     accept_content=['json'],
     task_serializer='json',
     result_serializer='json',
+    beat_scheduler='django_celery_beat.schedulers:DatabaseScheduler'
 )
 
 # Queue settings
@@ -46,14 +46,6 @@ app.conf.task_queues = [
         queue_arguments={'x-max-priority': 10}),  # Enable priority (0-10)
 ]
 app.conf.task_default_queue = 'tasks'  # Default queue name
-
-
-app.conf.beat_schedule = {
-    'task_flush_expired_tokens': {
-        'task': 'utils.tasks.task_flush_expired_tokens',
-        'schedule': crontab(minute='0'),  # Run every hour
-    },
-}
 
 
 # Custom task class to handle failure

@@ -4,7 +4,6 @@ LABEL maintainer="hasan.kh9776@gmail.com"
 
 # as non root user
 COPY ./default.conf.tpl /etc/nginx/default.conf.tpl
-COPY ./uwsgi_params /etc/nginx/uwsgi_params
 COPY ./run.sh /run.sh
 
 USER root

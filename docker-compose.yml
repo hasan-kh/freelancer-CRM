@@ -8,7 +8,6 @@ services:
       - db
       - redis
       - rabbitmq
-      - celery
 
   db:
     image: postgres:16-alpine
@@ -31,11 +30,28 @@ services:
              sh ./scripts/wait_for_redis.sh &&
              cd core &&
              python manage.py wait_for_db &&
-             celery --app=core worker --loglevel=INFO --queues=tasks -B"
+             celery --app=core worker --loglevel=INFO --queues=tasks"
     env_file:
       - ./envs/.env
     depends_on:
-      - redis
+      - app
+      - rabbitmq
+
+  celery_beat:
+    build:
+      context: .
+    command: >
+      sh -c "sh ./scripts/wait_for_rabbitmq.sh &&
+             sh ./scripts/wait_for_redis.sh &&
+             cd core &&
+             python manage.py wait_for_db &&
+             echo Sleeping 15 seconds until app service loads completely.
+             sleep 15 &&
+             celery --app=core beat --loglevel=INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    env_file:
+      - ./envs/.env
+    depends_on:
+      - app
       - rabbitmq
 
   flower:
@@ -47,4 +63,3 @@ services:
     depends_on:
       - celery
       - rabbitmq
-      - redis

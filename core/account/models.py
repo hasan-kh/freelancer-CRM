@@ -20,7 +20,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_("first name"), max_length=150, blank=True)
     last_name = models.CharField(_("last name"), max_length=150, blank=True)
     cellphone = models.CharField(_("cellphone"), max_length=11, unique=True,
-                                 blank=True, validators=[validate_cellphone_length_startswith])
+                                 blank=True, null=True, validators=[validate_cellphone_length_startswith])
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -39,7 +39,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
 
     @property
     def full_name(self) -> str:

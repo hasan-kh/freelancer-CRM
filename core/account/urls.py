@@ -4,7 +4,7 @@ from django.urls import path
 from account.views import (
     CustomTokenObtainPairView, CustomTokenRefreshView, CustomTokenBlacklistView,
     ChangePasswordView, PasswordResetRequestView, PasswordResetView,
-    RegisterView, ManageUserView,
+    RegisterUserView, ManageUserView,
 )
 
 app_name = 'account'
@@ -18,7 +18,7 @@ urlpatterns = [
     path('reset-password-request/', PasswordResetRequestView.as_view(), name='password-reset-request'),
     path('reset-password/', PasswordResetView.as_view(), name='password-reset'),
 
-    path('register/', RegisterView.as_view(), name='register'),
+    path('register/', RegisterUserView.as_view(), name='register'),
     path('me/', ManageUserView.as_view(), name='manage'),
 
 ]
