@@ -1,0 +1,2 @@
+envs/*.tpl linguist-language=Text
+proxy/default.conf.tpl linguist-language=Text
