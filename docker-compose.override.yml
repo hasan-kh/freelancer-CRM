@@ -10,7 +10,9 @@ services:
              python manage.py wait_for_db &&
              python manage.py migrate &&
              python manage.py collectstatic --noinput &&
+             django-admin compilemessages &&
              python manage.py runserver 0.0.0.0:8000"
+
     volumes:
       - ./core:/app/core
       - ./scripts:/app/scripts

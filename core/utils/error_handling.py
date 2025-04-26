@@ -1,7 +1,7 @@
 """Error codes to be centralized."""
 from typing import Dict
 
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.test import TestCase
 

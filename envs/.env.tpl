@@ -27,6 +27,11 @@ ADMIN_SITE_HEADER='Django Admin'
 ADMIN_INDEX_TITLE=Administration
 ADMIN_SITE_TITLE='Django Admin'
 
+PROJECT_TITLE='Example Project'
+# This will use in spectacular doc page header
+PROJECT_DESCRIPTION='This is a brief description about project.'
+
+
 # Activate OTP(One Time Password) for staff log in to admin, 1 for active, 0 for inactive
 OTP_STAFF_ACTIVE=0
 # The maximum number of seconds a token is valid.

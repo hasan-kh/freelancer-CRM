@@ -144,7 +144,7 @@ LANGUAGES = [
     ('fa', _('Farsi'))
 ]
 LOCALE_PATHS = [
-    # BASE_DIR / "trans/locale/fa",
+    BASE_DIR / 'utils/locale',
 ]
 TIME_ZONE = os.environ.get('TIME_ZONE', 'UTC')
 
@@ -188,6 +188,9 @@ ADMINS = [tuple(pair.split(':')) for pair in os.environ.get('ADMINS', '').split(
 ADMIN_SITE_HEADER = os.environ.get('ADMIN_SITE_HEADER', 'Django Admin')
 ADMIN_INDEX_TITLE = os.environ.get('ADMIN_INDEX_TITLE', 'Administration')
 ADMIN_SITE_TITLE = os.environ.get('ADMIN_SITE_TITLE', 'Django Admin')
+
+PROJECT_TITLE = os.environ.get('PROJECT_TITLE', 'Django Project')
+PROJECT_DESCRIPTION = os.environ.get('PROJECT_DESCRIPTION', '')
 
 # OTP (One Time Password) just for staff log into admin panel
 OTP_STAFF_ACTIVE = bool(int(os.environ.get('OTP_STAFF_ACTIVE', 1)))
@@ -260,8 +263,8 @@ CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://127.0.0
 
 # Spectacular
 SPECTACULAR_SETTINGS = {
-    'TITLE': ADMIN_SITE_TITLE,
-    'DESCRIPTION': 'Small customer relationship management for freelancers.',
+    'TITLE': PROJECT_TITLE,
+    'DESCRIPTION': PROJECT_DESCRIPTION,
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 

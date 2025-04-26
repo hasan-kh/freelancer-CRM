@@ -1,0 +1,105 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-25 19:10+0330\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: email_defaults.py:5
+msgid "Your password has been changed."
+msgstr "رمز عبور شما تغییر کرد."
+
+#: email_defaults.py:6
+#, python-brace-format
+msgid "Password for account({email}) has been changed."
+msgstr "رمز عبور برای حساب({email}) تغییر کرد. "
+
+#: email_defaults.py:10
+msgid "Password reset"
+msgstr "بازنشانی رمز عبور"
+
+#: email_defaults.py:11
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Use below code to reset password for account({email}).\n"
+#| "Your code is: {password_reset_code}If you did not make this request, "
+#| "Ignore it."
+msgid ""
+"Use below code to reset password for account({email}).\n"
+"Your code is: {password_reset_code}\n"
+"If you did not make this request, Ignore it."
+msgstr ""
+"از کد زیر برای بازنشانی رمز عبور حساب خود({email}) استفاده کنید.\n"
+"کد شما: {password_reset_code}\n"
+"اگر شما این درخواست را ایجاد نکرده اید، این پیام را نادیده بگیرید."
+
+#: error_handling.py:15
+#, python-brace-format
+msgid ""
+"This password is too short. It must contain at least {password_min_length} "
+"characters."
+msgstr "رمز عبور کوتاه است، باید حداقل {password_min_length} کاراکتر باشد."
+
+#: error_handling.py:21
+msgid "Passwords do not match."
+msgstr "رمز عبور و تکرار آن یکسان نیستند."
+
+#: error_handling.py:26
+msgid "password is incorrect."
+msgstr "رمز عبور نادرست است."
+
+#: error_handling.py:31
+msgid "This field is required."
+msgstr "تکمیل این فیلد اجباری است."
+
+#: error_handling.py:36
+msgid "Fill all required fields."
+msgstr "تمام فیلد های اجباری را پر کنید."
+
+#: error_handling.py:41
+#, python-brace-format
+msgid "Account with email({email}) not found."
+msgstr "حساب کاربری با ایمیل({email}) یافت نشد."
+
+#: error_handling.py:46
+#, python-brace-format
+msgid "Action not allowed, user({email}) is inactive."
+msgstr "عملیات مجاز نیست، کاربر({email}) غیر فعال است."
+
+#: error_handling.py:51
+msgid "Code is expired."
+msgstr "کد منقضی شده است."
+
+#: error_handling.py:56
+msgid "Code is invalid."
+msgstr "کد نادرست است."
+
+#: error_handling.py:61
+msgid "Cellphone must be 11 digits long and starts with 09."
+msgstr "تلفن همراه باید با ۰۹ شروع شود و ۱۱ رقم باشد."
+
+#: error_handling.py:66
+msgid "This field may not be blank."
+msgstr "این فیلد نباید خالی باشد."
+
+#: error_handling.py:71
+msgid "Incorrect authentication credentials."
+msgstr "اطلاعات ورود نادرست است."
+
+#: error_handling.py:76
+msgid "You have exceeded the request limit. Please try again later."
+msgstr ""
+"شما از حد مجاز تعداد درخواست‌ها عبور کرده‌اید. لطفاً بعداً دوباره تلاش کنید"

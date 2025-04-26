@@ -196,7 +196,8 @@ class PublicAccountViewsTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['detail'],
-                         _(f'Password reset code sent to your email({payload["email"]}).'))
+                         _('Password reset code sent to your email({email}).').format(email=payload["email"])
+                         )
         self.assertEqual(PasswordResetCode.objects.filter(user=user).count(), 1)
         prc = user.password_reset_code
         self.assertFalse(prc.is_expired())
@@ -264,7 +265,8 @@ class PublicAccountViewsTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         self.assertEqual(res.data['detail'],
-                         _(f'Password reset for account({user.email}) completed.'))
+                         _('Password reset for account({email}) completed.').format(email=user.email)
+                         )
 
         # Check PasswordResetCode object deleted
         self.assertFalse(PasswordResetCode.objects.filter(user=user, code=code).exists())

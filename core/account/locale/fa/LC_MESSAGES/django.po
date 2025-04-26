@@ -1,0 +1,133 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-26 14:21+0330\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: admin.py:28
+msgid "Personal info"
+msgstr "اطلاعات شخصی"
+
+#: admin.py:30
+msgid "Permissions"
+msgstr "مجوز ها"
+
+#: admin.py:41
+msgid "Important dates"
+msgstr "تاریخ های مهم"
+
+#: managers.py:13
+msgid "The Email must be set."
+msgstr "ایمیل را تعریف کنید."
+
+#: managers.py:27
+msgid "Superuser must have is_staff=True."
+msgstr "ابر کاربر باید وضعیت کارمندی فعال  داشته باشد."
+
+#: managers.py:29
+msgid "Superuser must have is_superuser=True."
+msgstr "ابر کاربر باید وضعیت ابر کاربری فعال  داشته باشد."
+
+#: models.py:19
+msgid "email address"
+msgstr "آدرس ایمیل"
+
+#: models.py:20
+msgid "first name"
+msgstr "نام"
+
+#: models.py:21
+msgid "last name"
+msgstr "نام خانوادگی"
+
+#: models.py:22
+msgid "cellphone"
+msgstr "تلفن همراه"
+
+#: models.py:25
+msgid "staff status"
+msgstr "وضعیت کارمندی"
+
+#: models.py:27
+msgid "Designates whether the user can log into this admin site."
+msgstr "آیا کاربر می تواند وارد پنل مدیریت شود؟"
+
+#: models.py:30
+msgid "active"
+msgstr "فعال"
+
+#: models.py:33
+msgid ""
+"Designates whether this user should be treated as active. Unselect this "
+"instead of deleting accounts."
+msgstr "آیا کاربر فعال است؟ به جای حذف کاربر آن را غیر فعال کنید."
+
+#: models.py:37
+msgid "date joined"
+msgstr "تاریخ عضویت"
+
+#: models.py:52 models.py:64
+msgid "user"
+msgstr "کاربر"
+
+#: models.py:53
+msgid "users"
+msgstr "کاربرها"
+
+#: models.py:67
+msgid "code"
+msgstr "کد"
+
+#: models.py:68
+msgid "created"
+msgstr "تاربخ و زمان ساخت"
+
+#: models.py:69
+msgid "expires at"
+msgstr "تاریخ و زمان انقضاء"
+
+#: models.py:92
+msgid "password reset code"
+msgstr "کد بازنشانی رمزعبور"
+
+#: models.py:93
+msgid "password reset codes"
+msgstr "کدهای بازنشانی رمزعبور"
+
+#: tests/test_views.py:199 views.py:308
+#, fuzzy, python-brace-format
+#| msgid "Password reset code sent to your email(user_email_here)."
+msgid "Password reset code sent to your email({email})."
+msgstr "کد بازنشانی رمزعبور به ایمیل شما (ایمیل کاربر) ارسال شد."
+
+#: tests/test_views.py:268 views.py:374
+#, fuzzy, python-brace-format
+#| msgid "Password reset code sent to your email({email})."
+msgid "Password reset for account({email}) completed."
+msgstr "بازنشانی رمزعبور برای حساب({email}) تکمیل شد."
+
+#: tests/test_views.py:578 views.py:206 views.py:244
+msgid "Password has been changed successfully."
+msgstr "رمزعبور با موفقیت تغییر کرد."
+
+#: views.py:272
+msgid "Password reset code sent to your email(user_email_here)."
+msgstr "کد بازنشانی رمزعبور به ایمیل شما (ایمیل کاربر) ارسال شد."
+
+#: views.py:335
+msgid "Password reset for account(user_email_here) completed."
+msgstr "بازنشانی رمزعبور برای حساب(ایمیل کاربر) تکمیل شد."

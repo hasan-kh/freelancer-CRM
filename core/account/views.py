@@ -288,6 +288,7 @@ class PasswordResetRequestView(GenericAPIView):
     )
     def post(self, request, *args, **kwargs):
         """Post method of password reset request view."""
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -304,7 +305,7 @@ class PasswordResetRequestView(GenericAPIView):
                                        'client_ip': get_ip_from_request(request)})
 
         return Response(
-            {'detail': _(f'Password reset code sent to your email({user_email}).')},
+            {'detail': _('Password reset code sent to your email({email}).').format(email=user_email)},
             status=status.HTTP_200_OK
         )
 
@@ -370,7 +371,7 @@ class PasswordResetView(GenericAPIView):
         prc.delete()
 
         return Response(
-            {'detail': _(f'Password reset for account({user_email}) completed.')},
+            {'detail': _('Password reset for account({email}) completed.').format(email=user_email)},
             status=status.HTTP_200_OK)
 
 

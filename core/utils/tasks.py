@@ -1,5 +1,6 @@
 """Tasks module for celery."""
 import socket
+from io import StringIO
 from smtplib import SMTPException
 
 from django.core.mail import EmailMultiAlternatives
@@ -64,7 +65,7 @@ def task_send_email_multi_alternatives(subject: str, message: str, recipient_ema
 
 def send_change_password_mail(user_email: str) -> dict:
     """Inform user via email when password changed successfully."""
-    message = CHANGE_PASSWORD_EMAIL['message'] % {'user_email': user_email}
+    message = CHANGE_PASSWORD_EMAIL['message'].format(email=user_email)
 
     task_send_email_multi_alternatives.delay(
         subject=CHANGE_PASSWORD_EMAIL['subject'],
@@ -83,8 +84,8 @@ def send_password_reset_request_mail(user_email: str, password_reset_code: str) 
     :param user_email: string
     :param password_reset_code: password reset code number as string
     """
-    message = PASSWORD_RESET_REQUEST_EMAIL['message'] % {'user_email': user_email,
-                                                         'password_reset_code': password_reset_code}
+    message = PASSWORD_RESET_REQUEST_EMAIL['message'].format(email=user_email,
+                                                             password_reset_code=password_reset_code)
 
     task_send_email_multi_alternatives.delay(
         subject=PASSWORD_RESET_REQUEST_EMAIL['subject'],
@@ -128,14 +129,23 @@ def task_create_otp_email_device_for_staff(self, user_id: int,
 
 # Scheduled Tasks
 @shared_task(queue='tasks')
-def task_flush_expired_tokens() -> None:
+def task_flush_expired_tokens() -> str:
     """Run management command `flushexpiredtokens` which will
-    delete any tokens from the outstanding list and blacklist that have expired."""
+    delete any tokens from the outstanding list and blacklist that have expired.
+    :return: output of flushexpiredtokens command
+    """
+    output = StringIO()
 
     # Call management command
-    call_command('flushexpiredtokens', verbosity=2)
-    programmer_logger.info('Task: flush_expired_tokens, expired tokens flushed successfully.')
+    call_command('flushexpiredtokens', verbosity=2, stdout=output)
 
+    # Get output string
+    output_string = output.getvalue()
+
+    programmer_logger.info('Task: flush_expired_tokens, expired tokens flushed successfully.\n'
+                           f'output: {output_string}')
+
+    return output_string
 
 # <editor-fold desc="shared_task all parameters doc">
 # @shared_task(
